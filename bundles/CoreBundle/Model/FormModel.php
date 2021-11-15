@@ -2,6 +2,9 @@
 
 namespace Mautic\CoreBundle\Model;
 
+use DateInterval;
+use DateTime;
+use Doctrine\ORM\UnitOfWork;
 use Mautic\CoreBundle\Entity\SkipModifiedInterface;
 use Mautic\CoreBundle\Helper\InputHelper;
 use Mautic\UserBundle\Entity\User;
@@ -27,7 +30,7 @@ class FormModel extends AbstractCommonModel
         // lock the row if applicable
         if (method_exists($entity, 'setCheckedOut') && method_exists($entity, 'getId') && $entity->getId()) {
             if ($this->userHelper->getUser()->getId()) {
-                $entity->setCheckedOut(new \DateTime());
+                $entity->setCheckedOut(new DateTime());
                 $entity->setCheckedOutBy($this->userHelper->getUser());
                 $this->em->persist($entity);
                 $this->em->flush();
@@ -44,15 +47,14 @@ class FormModel extends AbstractCommonModel
     {
         if (method_exists($entity, 'getCheckedOut')) {
             $checkedOut = $entity->getCheckedOut();
-            if (!empty($checkedOut) && $checkedOut instanceof \DateTime) {
-                $checkedOutBy = $entity->getCheckedOutBy();
-                $maxLockTime  = $this->coreParametersHelper->get('max_entity_lock_time', 0);
+            if (!empty($checkedOut) && $checkedOut instanceof DateTime) {
+                $checkedOutBy     = $entity->getCheckedOutBy();
+                $maxLockTime      = $this->coreParametersHelper->get('max_entity_lock_time', 0);
+                $lockValidityDate = false;
 
                 if (0 != $maxLockTime && is_numeric($maxLockTime)) {
                     $lockValidityDate = clone $checkedOut;
-                    $lockValidityDate->add(new \DateInterval('PT'.$maxLockTime.'S'));
-                } else {
-                    $lockValidityDate = false;
+                    $lockValidityDate->add(new DateInterval('PT'.$maxLockTime.'S'));
                 }
 
                 // is lock expired ?
@@ -169,12 +171,10 @@ class FormModel extends AbstractCommonModel
         }
 
         if (method_exists($entity, 'getId')) {
-            $isNew = ($entity->getId()) ? false : true;
-        } else {
-            $isNew = \Doctrine\ORM\UnitOfWork::STATE_NEW === $this->em->getUnitOfWork()->getEntityState($entity);
+            return !$entity->getId();
         }
 
-        return $isNew;
+        return UnitOfWork::STATE_NEW === $this->em->getUnitOfWork()->getEntityState($entity);
     }
 
     /**
@@ -193,9 +193,9 @@ class FormModel extends AbstractCommonModel
                 case 'unpublished':
                     $entity->setIsPublished(true);
                     break;
-                case 'published':
                 case 'expired':
                 case 'pending':
+                case 'published':
                     $this->dispatchEvent('pre_unpublish', $entity);
                     $entity->setIsPublished(false);
                     break;
@@ -204,9 +204,7 @@ class FormModel extends AbstractCommonModel
             // set timestamp changes
             $this->setTimestamps($entity, false, false);
         } elseif (method_exists($entity, 'setIsEnabled')) {
-            $enabled    = $entity->getIsEnabled();
-            $newSetting = ($enabled) ? false : true;
-            $entity->setIsEnabled($newSetting);
+            $entity->setIsEnabled(!$entity->getIsEnabled());
         }
 
         // hit up event listeners
@@ -234,16 +232,18 @@ class FormModel extends AbstractCommonModel
 
         if ($isNew) {
             if (method_exists($entity, 'setDateAdded') && !$entity->getDateAdded()) {
-                $entity->setDateAdded(new \DateTime());
+                $entity->setDateAdded(new DateTime());
             }
 
-            if ($this->userHelper->getUser() instanceof User) {
+            if (($user = $this->userHelper->getUser()) instanceof User) {
                 if (method_exists($entity, 'setCreatedBy') && !$entity->getCreatedBy()) {
-                    $entity->setCreatedBy($this->userHelper->getUser());
+                    $entity->setCreatedBy($user);
                 } elseif (method_exists($entity, 'setCreatedByUser') && !$entity->getCreatedByUser()) {
-                    $entity->setCreatedByUser($this->userHelper->getUser()->getName());
+                    $entity->setCreatedByUser($user->getName());
                 }
             }
+
+            $this->setModifiedData($entity);
 
             return;
         }
@@ -252,29 +252,24 @@ class FormModel extends AbstractCommonModel
             return;
         }
 
+        if (method_exists($entity, 'getChanges') ? !empty($entity->getChanges()) : true) {
+            $this->setModifiedData($entity);
+        }
+    }
+
+    private function setModifiedData(object $entity): void
+    {
         if (method_exists($entity, 'setDateModified')) {
-            $setDateModified = true;
-            if (method_exists($entity, 'getChanges')) {
-                $changes = $entity->getChanges();
-                if (empty($changes)) {
-                    $setDateModified = false;
-                }
-                if (is_array($changes) && 1 === count($changes) && isset($changes['dateLastActive'])) {
-                    $setDateModified = false;
-                }
-            }
-            if ($setDateModified) {
-                $dateModified = (defined('MAUTIC_DATE_MODIFIED_OVERRIDE')) ? \DateTime::createFromFormat('U', MAUTIC_DATE_MODIFIED_OVERRIDE)
-                    : new \DateTime();
-                $entity->setDateModified($dateModified);
-            }
+            $entity->setDateModified(
+                defined('MAUTIC_DATE_MODIFIED_OVERRIDE') ? DateTime::createFromFormat('U', MAUTIC_DATE_MODIFIED_OVERRIDE) : new DateTime()
+            );
         }
 
-        if ($this->userHelper->getUser() instanceof User) {
+        if (($user = $this->userHelper->getUser()) instanceof User) {
             if (method_exists($entity, 'setModifiedBy')) {
-                $entity->setModifiedBy($this->userHelper->getUser());
+                $entity->setModifiedBy($user);
             } elseif (method_exists($entity, 'setModifiedByUser')) {
-                $entity->setModifiedByUser($this->userHelper->getUser()->getName());
+                $entity->setModifiedByUser($user->getName());
             }
         }
     }
