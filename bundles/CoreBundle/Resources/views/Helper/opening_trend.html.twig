@@ -1,0 +1,44 @@
+{% set options = [{'label': 'mautic.core.timeframe.daily', 'data': '', 'id': 'days'}, {'label': 'mautic.core.timeframe.hourly', 'data': '', 'id': 'hours'}] %}
+<div class="options">
+    <div class="options__container mb-lg">
+        <div class="row">
+            <div class="options__emails col-xs-8">
+                <label for="email">{{ 'mautic.email.emails'|trans }}</label>
+                <select id="email" name="email" data-dynamic="chart-select" multiple required>
+                    {% for email in emails %}
+                        <option value="{{ email.eventId }}" selected>{{ email.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-xs-4">
+                <label for="btnGroup" class="mr-2">{{ 'mautic.campaign.trend'|trans }}</label>
+                <div class="btn-group btn-block" data-toggle="buttons">
+                    {% for option in options %}
+                        <label class="options__item {{ loop.first ? 'active' : '' }} btn btn-default"
+                               data-option="true"
+                               data-series="{{ option.data|json_encode }}"
+                               id="{{ option.id }}"
+                        >
+                            <input type="radio"
+                                   name="opening-trend-stats"
+                                   id="read"
+                                   autocomplete="off"
+                                    {{ loop.first ? 'checked' : '' }}
+                            >
+                            {{ option.label|trans }}
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="chart-data hide"></div>
+<div class="opening-trend__chart" data-toggle="opening-trend">
+    {{- include('@MauticCore/Helper/chart.html.twig', {
+        'chartData': '',
+        'chartType': 'line',
+        'chartHeight': 250,
+        'id': 'opening-trend',
+    }) -}}
+</div>

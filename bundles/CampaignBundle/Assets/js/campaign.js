@@ -134,6 +134,13 @@ Mautic.campaignOnLoad = function (container, response) {
             Mautic.processBuilderErrors(response);
         }
 
+        const emailTrendChart = mQuery(container).find('[data-load="email-trend"]').first();
+        if(emailTrendChart.length) {
+            mQuery(emailTrendChart).on('click', () => {
+                Mautic.initOpeningTrend(event.target);
+            });
+        }
+
         // update the cloned event info when storage is updated from different tab
         window.addEventListener('storage', function(event) {
             if (event.key === 'mautic_campaign_event_clone') {

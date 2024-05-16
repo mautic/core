@@ -929,6 +929,17 @@ class CampaignController extends AbstractStandardFormController
                 $this->prepareCampaignSourcesForEdit($objectId, $sourcesList, true);
                 $this->prepareCampaignEventsForEdit($entity, $objectId, true);
 
+                $eventsEmailsSend    = $entity->getEmailSendEvents();
+                $emailModel          = $this->getModel('email');
+                $emails              = [];
+
+                foreach ($eventsEmailsSend as $event) {
+                    $emails[$event->getId()] = [
+                        'eventId' => $event->getId(),
+                        'name'    => $event->getName().' (id:'.$event->getChannelId().')',
+                    ];
+                }
+
                 $args['viewParameters'] = array_merge(
                     $args['viewParameters'],
                     [
@@ -940,6 +951,8 @@ class CampaignController extends AbstractStandardFormController
                         'dateRangeForm'   => $dateRangeForm->createView(),
                         'campaignSources' => $this->campaignSources,
                         'campaignEvents'  => $events,
+                        'isEmailCampaign' => $entity->isEmailCampaign(),
+                        'emails'          => $emails,
                     ]
                 );
                 break;

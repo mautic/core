@@ -3,12 +3,16 @@
 namespace Mautic\CampaignBundle\Controller;
 
 use Doctrine\Persistence\ManagerRegistry;
+use Mautic\CampaignBundle\Entity\Campaign;
 use Mautic\CampaignBundle\Entity\LeadEventLog;
+use Mautic\CampaignBundle\Model\CampaignModel;
 use Mautic\CampaignBundle\Model\EventLogModel;
 use Mautic\CoreBundle\Controller\AjaxController as CommonAjaxController;
 use Mautic\CoreBundle\Factory\MauticFactory;
 use Mautic\CoreBundle\Factory\ModelFactory;
+use Mautic\CoreBundle\Helper\Chart\LineChart;
 use Mautic\CoreBundle\Helper\CoreParametersHelper;
+use Mautic\CoreBundle\Helper\DateTimeHelper;
 use Mautic\CoreBundle\Helper\InputHelper;
 use Mautic\CoreBundle\Helper\UserHelper;
 use Mautic\CoreBundle\Security\Permissions\CorePermissions;
@@ -18,6 +22,7 @@ use Mautic\CoreBundle\Twig\Helper\DateHelper;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 
 class AjaxController extends CommonAjaxController
 {
@@ -51,6 +56,43 @@ class AjaxController extends CommonAjaxController
         }
 
         return $this->sendJsonResponse($dataArray);
+    }
+
+    public function openingTrendAction(
+        Request $request,
+        int $objectId,
+        string $dateFrom = '',
+        string $dateTo = '',
+    ): Response {
+        /** @var CampaignModel $model */
+        $model               = $this->getModel('campaign');
+        $entity              = $model->getEntity($objectId);
+        $eventsEmailsSend    = $entity->getEmailSendEvents();
+        $emails              = [];
+
+        foreach ($eventsEmailsSend as $event) {
+            $emails[$event->getId()] = [
+                'eventId' => $event->getId(),
+                'emailId' => $event->getChannelId(),
+                'name'    => $event->getName().' (id:'.$event->getChannelId().')',
+            ];
+        }
+
+        $ids      = $request->query->get('ids');
+        $eventIds = strlen($ids) ? json_decode($ids) : [];
+
+        $emailTimeStats = $this->getCampaignOpeningTrendStats($entity, $dateFrom, $dateTo, $eventIds);
+
+        return new \Symfony\Component\HttpFoundation\JsonResponse($emailTimeStats);
+
+        /*return $this->render(
+            '@MauticCore/Helper/chart.html.twig',
+            [
+                'chartData'      => $emailTimeStats['days'],
+                'chartType'      => 'line',
+                'chartHeight'    => 250,
+            ]
+        );*/
     }
 
     public function updateScheduledCampaignEventAction(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
@@ -142,5 +184,86 @@ class AjaxController extends CommonAjaxController
         }
 
         return null;
+    }
+
+    /**
+     * @return array{}|array<string, array<int, array<string, array<int, string>|bool|string>|string>>
+     *
+     * @throws \Exception
+     */
+    public function getCampaignOpeningTrendStats(Campaign $campaign, string $dateFrom, string $dateTo, array $eventsIds = []): array
+    {
+        $stats                = [];
+        $eventsIds            = empty($eventsIds) ? $campaign->getEmailSendEvents()->getKeys() : $eventsIds;
+
+        $dateFromObject = new \DateTimeImmutable($dateFrom);
+        $dateToObject   = new \DateTimeImmutable($dateTo);
+
+        $stats['days']  = $this->getEmailDaysData($eventsIds, $dateFromObject, $dateToObject);
+        $stats['hours'] = $this->getEmailHoursData($eventsIds, $dateFromObject, $dateToObject);
+
+        return $stats;
+    }
+
+    /**
+     * @return array<string, array<int, array<string, array<int, string>|bool|string>|string>>
+     *
+     * @throws \Exception
+     */
+    protected function getEmailDaysData(array $eventsIds, \DateTimeImmutable $dateFrom, \DateTimeImmutable $dateTo): array
+    {
+        $model                 = $this->getModel('email');
+        $statRepository        = $model->getStatRepository();
+        $dateTimeHelper        = new DateTimeHelper();
+        $defaultTimezoneOffset = $dateTimeHelper->getLocalTimezoneOffset('Z');
+
+        $stats       = $statRepository->getEmailDayStats($eventsIds, $dateFrom, $dateTo, $defaultTimezoneOffset);
+
+        $chart  = new LineChart();
+        $chart->setLabels([
+            $this->translator->trans('mautic.core.date.monday'),
+            $this->translator->trans('mautic.core.date.tuesday'),
+            $this->translator->trans('mautic.core.date.wednesday'),
+            $this->translator->trans('mautic.core.date.thursday'),
+            $this->translator->trans('mautic.core.date.friday'),
+            $this->translator->trans('mautic.core.date.saturday'),
+            $this->translator->trans('mautic.core.date.sunday'),
+        ]);
+
+        $chart->setDataset($this->translator->trans('mautic.email.sent'), array_column($stats, 'sent_count'));
+        $chart->setDataset($this->translator->trans('mautic.email.read'), array_column($stats, 'read_count'));
+        $chart->setDataset($this->translator->trans('mautic.email.click'), array_column($stats, 'hit_count'));
+
+        return $chart->render();
+    }
+
+    /**
+     * @return array<string, array<int, array<string, array<int, string>|bool|string>|string>>
+     *
+     * @throws \Exception
+     */
+    public function getEmailHoursData(array $eventsIds, \DateTimeImmutable $dateFrom, \DateTimeImmutable $dateTo): array
+    {
+        $model                 = $this->getModel('email');
+        $statRepository        = $model->getStatRepository();
+        $dateTimeHelper        = new DateTimeHelper();
+        $defaultTimezoneOffset = $dateTimeHelper->getLocalTimezoneOffset('Z');
+
+        $stats = $statRepository->getEmailTimeStats($eventsIds, $dateFrom, $dateTo, $defaultTimezoneOffset);
+
+        $hoursRange = range(0, 23, 1);
+        $labels     = [];
+
+        foreach ($hoursRange as $r) {
+            $labels[] = sprintf('%02d:00', $r).'-'.sprintf('%02d:00', fmod($r + 1, 24));
+        }
+
+        $chart  = new LineChart();
+        $chart->setLabels($labels);
+        $chart->setDataset($this->translator->trans('mautic.email.sent'), array_column($stats, 'sent_count'));
+        $chart->setDataset($this->translator->trans('mautic.email.read'), array_column($stats, 'read_count'));
+        $chart->setDataset($this->translator->trans('mautic.email.click'), array_column($stats, 'hit_count'));
+
+        return $chart->render();
     }
 }

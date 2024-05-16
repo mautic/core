@@ -31,6 +31,10 @@ return [
                 'path'       => '/campaign-map-stats/{objectId}/{dateFrom}/{dateTo}',
                 'controller' => 'Mautic\CampaignBundle\Controller\CampaignMapStatsController::viewAction',
             ],
+            'mautic_email_opening_trend' => [
+                'path'       => '/campaign-email-opening-trend/{objectId}/{dateFrom}/{dateTo}',
+                'controller' => 'Mautic\CampaignBundle\Controller\AjaxController::openingTrendAction',
+            ],
         ],
         'api'  => [
             'mautic_api_campaignsstandard'            => [

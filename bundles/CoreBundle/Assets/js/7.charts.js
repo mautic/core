@@ -59,7 +59,7 @@ Mautic.renderCharts = function(scope) {
  */
 Mautic.renderLineChart = function(canvas) {
     var data = JSON.parse(canvas.text());
-    if (!data.labels.length || !data.datasets.length) return;
+    if (!data || !data.labels.length || !data.datasets.length) return;
     var chart = new Chart(canvas, {
         type: 'line',
         data: data,

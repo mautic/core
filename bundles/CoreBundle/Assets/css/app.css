@@ -4493,6 +4493,27 @@ fieldset[disabled] .btn-ghost.btn-icon.focus i {
   -webkit-box-shadow: none;
   box-shadow: none;
 }
+.options__item.active,
+.options__item.active:hover {
+  color: #fff;
+  background-color: #3a7e6f;
+}
+.options__item:focus,
+.options__item.focus,
+.options__item:active,
+.options__item.active.focus {
+  color: #fff;
+  background-color: #3a7e6f;
+}
+.options__item.btn,
+.options__item.btn:active,
+.options__item.btn.focus,
+.options__item.btn:focus,
+.options__item.btn.active,
+.options__item.btn:active:focus,
+.options__item.btn.active:focus {
+  outline: 0 !important;
+}
 .alert-dismissible .close,
 .alert-dismissible .close {
   top: -1px;
