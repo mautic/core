@@ -88,8 +88,6 @@
                 </span>
             </div>
             <!--/ campaign detail collapseable toggler -->
-            {% set dateFrom = dateRangeForm.children['date_from'].vars['data'] %}
-            {% set dateTo = dateRangeForm.children['date_to'].vars['data'] %}
 
             {{ customContent('left.section.top', _context) }}
             {% set dateFrom = dateRangeForm.children['date_from'].vars['data'] %}
@@ -141,7 +139,7 @@
                         <i class="ri-loader-3-line ri-spin"></i>
                     </div>
                 </div>
-                {%  if isEmailCampaign|default(false) %}
+                {% if isEmailCampaign|default(false) %}
                 <div class="tab-pane bdr-w-0" id="emails-container"
                      data-graph-url="{{ path('mautic_email_opening_trend', {'objectId' : campaign.id, 'dateFrom' : dateFrom|date('Y-m-d'), 'dateTo' : dateTo|date('Y-m-d'), 'ids' : []}) }}"
                 >
@@ -153,7 +151,6 @@
                 </div>
                 {% endif %}
             </div>
-
             <!--/ stats -->
 
             {{ customContent('details.stats.graph.below', _context) }}

@@ -930,7 +930,6 @@ class CampaignController extends AbstractStandardFormController
                 $this->prepareCampaignEventsForEdit($entity, $objectId, true);
 
                 $eventsEmailsSend    = $entity->getEmailSendEvents();
-                $emailModel          = $this->getModel('email');
                 $emails              = [];
 
                 foreach ($eventsEmailsSend as $event) {

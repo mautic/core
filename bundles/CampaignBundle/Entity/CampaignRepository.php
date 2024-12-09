@@ -602,44 +602,4 @@ class CampaignRepository extends CommonRepository
 
         return array_unique(array_map(fn ($val): int => (int) $val, $query->getSingleColumnResult()));
     }
-
-    /**
-     * Searches for emails assigned to campaign and returns associative array of email ids in format:.
-     *
-     *  array (size=1)
-     *      0 =>
-     *          array (size=2)
-     *              'channelId' => int 18
-     *
-     * or empty array if nothing found.
-     *
-     * @param int $id
-     */
-    public function fetchEmailsByCampaignId($id): array
-    {
-        $emails = $this->getEntityManager()
-            ->createQueryBuilder()
-            ->select('e.channelId')
-            ->from(Campaign::class, $this->getTableAlias(), $this->getTableAlias().'.id')
-            ->leftJoin(
-                $this->getTableAlias().'.events',
-                'e',
-                Expr\Join::WITH,
-                "e.channel = '".Event::CHANNEL_EMAIL."'"
-            )
-            ->where($this->getTableAlias().'.id = :id')
-            ->setParameter('id', $id)
-            ->andWhere('e.channelId IS NOT NULL')
-            ->getQuery()
-            ->setHydrationMode(\Doctrine\ORM\Query::HYDRATE_ARRAY)
-            ->getResult();
-
-        $return = [];
-        foreach ($emails as $email) {
-            // Every channelId represents e-mail ID
-            $return[] = $email['channelId']; // mautic_campaign_events.channel_id
-        }
-
-        return $return;
-    }
 }

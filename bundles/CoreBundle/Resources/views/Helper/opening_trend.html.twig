@@ -35,10 +35,12 @@
 </div>
 <div class="chart-data hide"></div>
 <div class="opening-trend__chart" data-toggle="opening-trend">
-    {{- include('@MauticCore/Helper/chart.html.twig', {
-        'chartData': '',
-        'chartType': 'line',
-        'chartHeight': 250,
-        'id': 'opening-trend',
-    }) -}}
+    <div class="chart-wrapper">
+        <div class="pt-sd pr-md pb-md pl-md">
+            <div style="height: 285px">
+                <canvas class="chart line-chart">
+                </canvas>
+            </div>
+        </div>
+    </div>
 </div>

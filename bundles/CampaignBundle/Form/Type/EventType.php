@@ -14,8 +14,6 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -289,17 +287,6 @@ class EventType extends AbstractType
                 'mapped' => false,
             ]
         );
-
-        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event): void {
-            $data        = $event->getData();
-            $triggerMode = $data['triggerMode'] ?? 'immediate';
-
-            // Do not set any trigger window when optimized mode is not used
-            if ('optimized' !== $triggerMode) {
-                $data['triggerWindow'] = null;
-                $event->setData($data);
-            }
-        });
 
         $builder->addEventSubscriber(new CleanFormSubscriber($masks));
 
