@@ -1,0 +1,62 @@
+<div class="row">
+    <div class="col-xs-3">
+        <div class="list-group">
+            <a href="#" class="list-group-item active">
+                <div class="d-flex">
+                    <h4 class="list-group-item-heading fw-sb">Plugins</h4>
+                    <i class="ri-apps-2-add-fill"></i>
+                </div>
+                <p class="list-group-item-text">This option is compatible with community plugins available in common CMS.</p>
+            </a>
+            <a href="#" class="list-group-item">
+                <div class="d-flex">
+                    <h4 class="list-group-item-heading fw-sb">HTML</h4>
+                    <i class="ri-html5-fill"></i>
+                </div>
+                <p class="list-group-item-text">Choose this to ensure maximum compatibility with any website that have the tracking script installed.</p>
+            </a>
+          </div>
+    </div>
+    <div class="col-xs-8">
+        <div class="tile">
+            <div class="dwc--generator-toolbar d-flex fd-column jc-space-between">
+                {% include '@MauticCore/Helper/button.html.twig' with {
+                    buttons: [
+                        {
+                            icon: 'ri-brackets-line',
+                            label: 'Change code wrapper',
+                            icon_only: true,
+                            variant: 'ghost'
+                        },
+                        {
+                            icon: 'ri-braces-line',
+                            label: 'Change code wrapper',
+                            icon_only: true,
+                            variant: 'ghost'
+                        },
+                        {
+                            icon: 'ri-question-line',
+                            label: 'More information',
+                            icon_only: true,
+                            variant: 'ghost'
+                        }
+                    ]
+                } %}
+
+            </div>
+            <div class="dwc--generator-content">
+                <div class="dwc--generator-content-code"></div>
+                <div class="dwc--generator-content-help"></div>
+            </div>
+        </div>
+        {% include '@MauticCore/Helper/button.html.twig' with {
+            buttons: [
+                {
+                    label: 'Copy dynamic content slot',
+                    icon: 'ri-clipboard-line'
+                }
+            ]
+        } %}
+
+    </div>
+</div>
