@@ -1,45 +1,22 @@
-{% set options = [{'label': 'mautic.core.timeframe.daily', 'data': '', 'id': 'days'}, {'label': 'mautic.core.timeframe.hourly', 'data': '', 'id': 'hours'}] %}
-<div class="options">
-    <div class="options__container mb-lg">
-        <div class="row">
-            <div class="options__emails col-xs-8">
-                <label for="email">{{ 'mautic.email.emails'|trans }}</label>
-                <select id="email" name="email" data-dynamic="chart-select" multiple required>
-                    {% for email in emails %}
-                        <option value="{{ email.eventId }}" selected>{{ email.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-xs-4">
-                <label for="btnGroup" class="mr-2">{{ 'mautic.campaign.trend'|trans }}</label>
-                <div class="btn-group btn-block" data-toggle="buttons">
-                    {% for option in options %}
-                        <label class="options__item {{ loop.first ? 'active' : '' }} btn btn-default"
-                               data-option="true"
-                               data-series="{{ option.data|json_encode }}"
-                               id="{{ option.id }}"
-                        >
-                            <input type="radio"
-                                   name="opening-trend-stats"
-                                   id="read"
-                                   autocomplete="off"
-                                    {{ loop.first ? 'checked' : '' }}
-                            >
-                            {{ option.label|trans }}
-                        </label>
-                    {% endfor %}
+<div class="opening-trend">
+    <div class="opening-trend__chart" data-toggle="opening-trend">
+        <div class="chart-wrapper">
+            <div class="row">
+                <div class="col-md-6">
+                    {{- include('@MauticCore/Helper/chart.html.twig', {
+                        'chartData': days,
+                        'chartType': 'bar',
+                        'chartHeight': 300
+                    }) -}}
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="chart-data hide"></div>
-<div class="opening-trend__chart" data-toggle="opening-trend">
-    <div class="chart-wrapper">
-        <div class="pt-sd pr-md pb-md pl-md">
-            <div style="height: 285px">
-                <canvas class="chart line-chart">
-                </canvas>
+                <div class="col-md-6">
+                    {{- include('@MauticCore/Helper/chart.html.twig', {
+                        'chartData': hours,
+                        'chartType': 'hour',
+                        'chartHeight': 300,
+                        'xLabels': true
+                    }) -}}
+                </div>
             </div>
         </div>
     </div>

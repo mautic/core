@@ -45,6 +45,8 @@ Mautic.renderCharts = function(scope) {
                     Mautic.renderSimpleBarChart(canvas)
                 } else if (canvas.hasClass('horizontal-bar-chart')) {
                     Mautic.renderHorizontalBarChart(canvas)
+                } else if (canvas.hasClass('hour-chart')) {
+                    Mautic.renderHourChart(canvas)
                 }
             }
             canvas.addClass('chart-rendered');
@@ -117,6 +119,33 @@ Mautic.renderLineChart = function(canvas) {
     });
     Mautic.chartObjects.push(chart);
 };
+
+Mautic.renderHourChart = function(canvas) {
+    const data = JSON.parse(canvas.text());
+    const chart = new Chart(canvas, {
+        type: 'line',
+        data: data,
+        options: {
+            lineTension : 0.2,
+            borderWidth: 1,
+            tooltips: {
+                mode: 'index',
+                intersect: false
+            },
+            scales: {
+                xAxes: [{
+                    ticks: {
+                        autoSkip: true,
+                        maxTicksLimit: 6,
+                        maxRotation: 0,
+                    }
+                }],
+            },
+        }
+    });
+    Mautic.chartObjects.push(chart);
+};
+
 
 /**
  * Render the chart.js pie chart

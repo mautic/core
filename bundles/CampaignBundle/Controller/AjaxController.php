@@ -19,6 +19,7 @@ use Mautic\CoreBundle\Security\Permissions\CorePermissions;
 use Mautic\CoreBundle\Service\FlashBag;
 use Mautic\CoreBundle\Translation\Translator;
 use Mautic\CoreBundle\Twig\Helper\DateHelper;
+use Mautic\EmailBundle\Entity\StatRepository;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -56,43 +57,6 @@ class AjaxController extends CommonAjaxController
         }
 
         return $this->sendJsonResponse($dataArray);
-    }
-
-    public function openingTrendAction(
-        Request $request,
-        int $objectId,
-        string $dateFrom = '',
-        string $dateTo = '',
-    ): Response {
-        /** @var CampaignModel $model */
-        $model               = $this->getModel('campaign');
-        $entity              = $model->getEntity($objectId);
-        $eventsEmailsSend    = $entity->getEmailSendEvents();
-        $emails              = [];
-
-        foreach ($eventsEmailsSend as $event) {
-            $emails[$event->getId()] = [
-                'eventId' => $event->getId(),
-                'emailId' => $event->getChannelId(),
-                'name'    => $event->getName().' (id:'.$event->getChannelId().')',
-            ];
-        }
-
-        $ids      = $request->query->get('ids');
-        $eventIds = strlen($ids) ? json_decode($ids) : [];
-
-        $emailTimeStats = $this->getCampaignOpeningTrendStats($entity, $dateFrom, $dateTo, $eventIds);
-
-        return new \Symfony\Component\HttpFoundation\JsonResponse($emailTimeStats);
-
-        /*return $this->render(
-            '@MauticCore/Helper/chart.html.twig',
-            [
-                'chartData'      => $emailTimeStats['days'],
-                'chartType'      => 'line',
-                'chartHeight'    => 250,
-            ]
-        );*/
     }
 
     public function updateScheduledCampaignEventAction(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
@@ -205,18 +169,81 @@ class AjaxController extends CommonAjaxController
         return $stats;
     }
 
+    //public function openingTrendAction(
+    //    StatRepository $statRepository,
+    //    CampaignModel $model,
+    //    int $objectId,
+    //    string $dateFrom = '',
+    //    string $dateTo = '',
+    //): Response {
+    //    $entity              = $model->getEntity($objectId);
+    //    $eventsEmailsSend    = $entity->getEmailSendEvents();
+    //    $emails              = [];
+    //
+    //    foreach ($eventsEmailsSend as $event) {
+    //        $emails[$event->getId()] = [
+    //            'eventId' => $event->getId(),
+    //            'emailId' => $event->getChannelId(),
+    //            'name'    => $event->getName().' (id:'.$event->getChannelId().')',
+    //        ];
+    //    }
+    //
+    //    $eventsIds            = empty($eventsIds) ? $entity->getEmailSendEvents()->getKeys() : $eventsIds;
+    //    $stats                = [];
+    //
+    //    $dateFromObject = new \DateTimeImmutable($dateFrom);
+    //    $dateToObject   = new \DateTimeImmutable($dateTo);
+    //
+    //    $stats['days']  = $this->getEmailDaysData($statRepository, $eventsIds, $dateFromObject, $dateToObject);
+    //    $stats['hours'] = $this->getEmailHoursData($statRepository, $eventsIds, $dateFromObject, $dateToObject);
+    //
+    //    return new \Symfony\Component\HttpFoundation\JsonResponse($stats);
+    //}
+
+    public function openingTrendAction(
+        StatRepository $statRepository,
+        CampaignModel $model,
+        int $objectId,
+        string $dateFrom = '',
+        string $dateTo = '',
+    ): Response {
+        $entity              = $model->getEntity($objectId);
+        $eventsEmailsSend    = $entity->getEmailSendEvents();
+        $emails              = [];
+
+        foreach ($eventsEmailsSend as $event) {
+            $emails[$event->getId()] = [
+                'eventId' => $event->getId(),
+                'emailId' => $event->getChannelId(),
+                'name'    => $event->getName().' (id:'.$event->getChannelId().')',
+            ];
+        }
+
+        $eventsIds            = empty($eventsIds) ? $entity->getEmailSendEvents()->getKeys() : $eventsIds;
+        $dateFromObject = new \DateTimeImmutable($dateFrom);
+        $dateToObject   = new \DateTimeImmutable($dateTo);
+
+        $days  = $this->getEmailDaysData($statRepository, $eventsIds, $dateFromObject, $dateToObject);
+        $hours = $this->getEmailHoursData($statRepository, $eventsIds, $dateFromObject, $dateToObject);
+
+        return $this->render(
+            '@MauticCore/Helper/opening_trend.html.twig',
+            [
+                'days'      => $days,
+                'hours'     => $hours,
+            ]
+        );
+    }
+
     /**
      * @return array<string, array<int, array<string, array<int, string>|bool|string>|string>>
      *
      * @throws \Exception
      */
-    protected function getEmailDaysData(array $eventsIds, \DateTimeImmutable $dateFrom, \DateTimeImmutable $dateTo): array
+    protected function getEmailDaysData(StatRepository $statRepository, array $eventsIds, \DateTimeImmutable $dateFrom, \DateTimeImmutable $dateTo): array
     {
-        $model                 = $this->getModel('email');
-        $statRepository        = $model->getStatRepository();
         $dateTimeHelper        = new DateTimeHelper();
         $defaultTimezoneOffset = $dateTimeHelper->getLocalTimezoneOffset('Z');
-
         $stats       = $statRepository->getEmailDayStats($eventsIds, $dateFrom, $dateTo, $defaultTimezoneOffset);
 
         $chart  = new LineChart();
@@ -242,10 +269,8 @@ class AjaxController extends CommonAjaxController
      *
      * @throws \Exception
      */
-    public function getEmailHoursData(array $eventsIds, \DateTimeImmutable $dateFrom, \DateTimeImmutable $dateTo): array
+    public function getEmailHoursData(StatRepository $statRepository, array $eventsIds, \DateTimeImmutable $dateFrom, \DateTimeImmutable $dateTo): array
     {
-        $model                 = $this->getModel('email');
-        $statRepository        = $model->getStatRepository();
         $dateTimeHelper        = new DateTimeHelper();
         $defaultTimezoneOffset = $dateTimeHelper->getLocalTimezoneOffset('Z');
 

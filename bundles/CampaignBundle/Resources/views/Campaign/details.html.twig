@@ -109,7 +109,7 @@
                     {%  if isEmailCampaign|default(false) %}
                     <li>
                         <a href="#emails-container" role="tab" data-toggle="tab" data-load="email-trend">
-                            {{ 'mautic.email.thead.opening.trend'|trans }}
+                            {{ 'mautic.campaign.metrics'|trans }}
                         </a>
                     </li>
                     {% endif %}
@@ -142,13 +142,7 @@
                 {% if isEmailCampaign|default(false) %}
                 <div class="tab-pane bdr-w-0" id="emails-container"
                      data-graph-url="{{ path('mautic_email_opening_trend', {'objectId' : campaign.id, 'dateFrom' : dateFrom|date('Y-m-d'), 'dateTo' : dateTo|date('Y-m-d'), 'ids' : []}) }}"
-                >
-                    <div class="opening-trend">
-                        {{- include('@MauticCore/Helper/opening_trend.html.twig', {
-                            'emails': emails,
-                        }) -}}
-                    </div>
-                </div>
+                ></div>
                 {% endif %}
             </div>
             <!--/ stats -->

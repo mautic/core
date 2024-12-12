@@ -137,7 +137,14 @@ Mautic.campaignOnLoad = function (container, response) {
         const emailTrendChart = mQuery(container).find('[data-load="email-trend"]').first();
         if(emailTrendChart.length) {
             mQuery(emailTrendChart).on('click', () => {
-                Mautic.initOpeningTrend(event.target);
+                const $emailsContainer = mQuery('#emails-container');
+                mQuery.ajax({
+                    url: $emailsContainer.data('graph-url'),
+                    success: function (response) {
+                        $emailsContainer.html(response);
+                        Mautic.renderCharts($emailsContainer);
+                    }
+                });
             });
         }
 
