@@ -366,9 +366,9 @@ class DateTimeHelper
         }
     }
 
-    public function getLocalTimezoneOffset(string $format = 'P'): string
+    public function getLocalTimezoneOffset(): string
     {
-        return $this->getLocalDateTime()->format($format);
+        return $this->getLocalDateTime()->format('P');
     }
 
     protected function setDefaultTimezone(): void

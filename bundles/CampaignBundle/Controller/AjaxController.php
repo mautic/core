@@ -3,14 +3,13 @@
 namespace Mautic\CampaignBundle\Controller;
 
 use Doctrine\Persistence\ManagerRegistry;
-use Mautic\CampaignBundle\Entity\Campaign;
 use Mautic\CampaignBundle\Entity\LeadEventLog;
 use Mautic\CampaignBundle\Model\CampaignModel;
 use Mautic\CampaignBundle\Model\EventLogModel;
 use Mautic\CoreBundle\Controller\AjaxController as CommonAjaxController;
 use Mautic\CoreBundle\Factory\MauticFactory;
 use Mautic\CoreBundle\Factory\ModelFactory;
-use Mautic\CoreBundle\Helper\Chart\LineChart;
+use Mautic\CoreBundle\Helper\Chart\BarChart;
 use Mautic\CoreBundle\Helper\CoreParametersHelper;
 use Mautic\CoreBundle\Helper\DateTimeHelper;
 use Mautic\CoreBundle\Helper\InputHelper;
@@ -150,56 +149,6 @@ class AjaxController extends CommonAjaxController
         return null;
     }
 
-    /**
-     * @return array{}|array<string, array<int, array<string, array<int, string>|bool|string>|string>>
-     *
-     * @throws \Exception
-     */
-    public function getCampaignOpeningTrendStats(Campaign $campaign, string $dateFrom, string $dateTo, array $eventsIds = []): array
-    {
-        $stats                = [];
-        $eventsIds            = empty($eventsIds) ? $campaign->getEmailSendEvents()->getKeys() : $eventsIds;
-
-        $dateFromObject = new \DateTimeImmutable($dateFrom);
-        $dateToObject   = new \DateTimeImmutable($dateTo);
-
-        $stats['days']  = $this->getEmailDaysData($eventsIds, $dateFromObject, $dateToObject);
-        $stats['hours'] = $this->getEmailHoursData($eventsIds, $dateFromObject, $dateToObject);
-
-        return $stats;
-    }
-
-    //public function openingTrendAction(
-    //    StatRepository $statRepository,
-    //    CampaignModel $model,
-    //    int $objectId,
-    //    string $dateFrom = '',
-    //    string $dateTo = '',
-    //): Response {
-    //    $entity              = $model->getEntity($objectId);
-    //    $eventsEmailsSend    = $entity->getEmailSendEvents();
-    //    $emails              = [];
-    //
-    //    foreach ($eventsEmailsSend as $event) {
-    //        $emails[$event->getId()] = [
-    //            'eventId' => $event->getId(),
-    //            'emailId' => $event->getChannelId(),
-    //            'name'    => $event->getName().' (id:'.$event->getChannelId().')',
-    //        ];
-    //    }
-    //
-    //    $eventsIds            = empty($eventsIds) ? $entity->getEmailSendEvents()->getKeys() : $eventsIds;
-    //    $stats                = [];
-    //
-    //    $dateFromObject = new \DateTimeImmutable($dateFrom);
-    //    $dateToObject   = new \DateTimeImmutable($dateTo);
-    //
-    //    $stats['days']  = $this->getEmailDaysData($statRepository, $eventsIds, $dateFromObject, $dateToObject);
-    //    $stats['hours'] = $this->getEmailHoursData($statRepository, $eventsIds, $dateFromObject, $dateToObject);
-    //
-    //    return new \Symfony\Component\HttpFoundation\JsonResponse($stats);
-    //}
-
     public function openingTrendAction(
         StatRepository $statRepository,
         CampaignModel $model,
@@ -220,8 +169,8 @@ class AjaxController extends CommonAjaxController
         }
 
         $eventsIds            = empty($eventsIds) ? $entity->getEmailSendEvents()->getKeys() : $eventsIds;
-        $dateFromObject = new \DateTimeImmutable($dateFrom);
-        $dateToObject   = new \DateTimeImmutable($dateTo);
+        $dateFromObject       = new \DateTimeImmutable($dateFrom);
+        $dateToObject         = new \DateTimeImmutable($dateTo);
 
         $days  = $this->getEmailDaysData($statRepository, $eventsIds, $dateFromObject, $dateToObject);
         $hours = $this->getEmailHoursData($statRepository, $eventsIds, $dateFromObject, $dateToObject);
@@ -243,11 +192,10 @@ class AjaxController extends CommonAjaxController
     protected function getEmailDaysData(StatRepository $statRepository, array $eventsIds, \DateTimeImmutable $dateFrom, \DateTimeImmutable $dateTo): array
     {
         $dateTimeHelper        = new DateTimeHelper();
-        $defaultTimezoneOffset = $dateTimeHelper->getLocalTimezoneOffset('Z');
-        $stats       = $statRepository->getEmailDayStats($eventsIds, $dateFrom, $dateTo, $defaultTimezoneOffset);
+        $defaultTimezoneOffset = $dateTimeHelper->getLocalDateTime()->format('Z');
+        $stats                 = $statRepository->getEmailDayStats($eventsIds, $dateFrom, $dateTo, $defaultTimezoneOffset);
 
-        $chart  = new LineChart();
-        $chart->setLabels([
+        $chart  = new BarChart([
             $this->translator->trans('mautic.core.date.monday'),
             $this->translator->trans('mautic.core.date.tuesday'),
             $this->translator->trans('mautic.core.date.wednesday'),
@@ -272,7 +220,7 @@ class AjaxController extends CommonAjaxController
     public function getEmailHoursData(StatRepository $statRepository, array $eventsIds, \DateTimeImmutable $dateFrom, \DateTimeImmutable $dateTo): array
     {
         $dateTimeHelper        = new DateTimeHelper();
-        $defaultTimezoneOffset = $dateTimeHelper->getLocalTimezoneOffset('Z');
+        $defaultTimezoneOffset = $dateTimeHelper->getLocalDateTime()->format('Z');
 
         $stats = $statRepository->getEmailTimeStats($eventsIds, $dateFrom, $dateTo, $defaultTimezoneOffset);
 
@@ -283,8 +231,7 @@ class AjaxController extends CommonAjaxController
             $labels[] = sprintf('%02d:00', $r).'-'.sprintf('%02d:00', fmod($r + 1, 24));
         }
 
-        $chart  = new LineChart();
-        $chart->setLabels($labels);
+        $chart  = new BarChart($labels);
         $chart->setDataset($this->translator->trans('mautic.email.sent'), array_column($stats, 'sent_count'));
         $chart->setDataset($this->translator->trans('mautic.email.read'), array_column($stats, 'read_count'));
         $chart->setDataset($this->translator->trans('mautic.email.click'), array_column($stats, 'hit_count'));

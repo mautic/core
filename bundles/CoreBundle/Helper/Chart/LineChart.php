@@ -39,14 +39,12 @@ class LineChart extends AbstractChart implements ChartInterface
         $dateTo = null,
         protected $dateFormat = null
     ) {
-        if (!empty($dateFrom) || !empty($dateTo)) {
-            $this->unit       = $unit ?? $this->getTimeUnitFromDateRange($dateFrom, $dateTo);
-            $this->isTimeUnit = in_array($this->unit, ['H', 'i', 's']);
-            $this->setDateRange($dateFrom, $dateTo);
-            $this->amount     = $this->countAmountFromDateRange();
-            $this->generateTimeLabels($this->amount);
-            $this->addOneUnitMinusOneSec($this->dateTo);
-        }
+        $this->unit       = $unit ?? $this->getTimeUnitFromDateRange($dateFrom, $dateTo);
+        $this->isTimeUnit = in_array($this->unit, ['H', 'i', 's']);
+        $this->setDateRange($dateFrom, $dateTo);
+        $this->amount     = $this->countAmountFromDateRange();
+        $this->generateTimeLabels($this->amount);
+        $this->addOneUnitMinusOneSec($this->dateTo);
     }
 
     /**
@@ -124,10 +122,5 @@ class LineChart extends AbstractChart implements ChartInterface
             'pointHoverBackgroundColor' => $color->toRgba(1),
             'pointHoverBorderColor'     => $color->toRgba(1),
         ];
-    }
-
-    public function setLabels(array $labels): void
-    {
-        $this->labels = $labels;
     }
 }

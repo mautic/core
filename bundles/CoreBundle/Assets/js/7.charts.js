@@ -61,7 +61,7 @@ Mautic.renderCharts = function(scope) {
  */
 Mautic.renderLineChart = function(canvas) {
     var data = JSON.parse(canvas.text());
-    if (!data || !data.labels.length || !data.datasets.length) return;
+    if (!data.labels.length || !data.datasets.length) return;
     var chart = new Chart(canvas, {
         type: 'line',
         data: data,
@@ -123,15 +123,9 @@ Mautic.renderLineChart = function(canvas) {
 Mautic.renderHourChart = function(canvas) {
     const data = JSON.parse(canvas.text());
     const chart = new Chart(canvas, {
-        type: 'line',
+        type: 'bar',
         data: data,
         options: {
-            lineTension : 0.2,
-            borderWidth: 1,
-            tooltips: {
-                mode: 'index',
-                intersect: false
-            },
             scales: {
                 xAxes: [{
                     ticks: {
