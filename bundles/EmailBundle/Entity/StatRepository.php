@@ -864,21 +864,28 @@ class StatRepository extends CommonRepository
                 '('.
                 $this->getEntityManager()->getConnection()->createQueryBuilder()
                     ->select(
-                        'WEEKDAY(TIMESTAMPADD(SECOND, :timezoneOffset, date_hit)) AS hit_day',
-                        'count(id) AS hit_count'
+                        "WEEKDAY(TIMESTAMPADD(SECOND, :timezoneOffset, {$pageHitsAlias}.date_hit)) AS hit_day",
+                        "COUNT(DISTINCT {$pageHitsAlias}.id) AS hit_count"
                     )
-                    ->from(MAUTIC_TABLE_PREFIX.'channel_url_trackables', $cutAlias)
+                    ->from(MAUTIC_TABLE_PREFIX.'page_hits', $pageHitsAlias)
+                    ->join(
+                        $pageHitsAlias,
+                        MAUTIC_TABLE_PREFIX.'channel_url_trackables',
+                        $cutAlias,
+                        "{$cutAlias}.redirect_id = {$pageHitsAlias}.redirect_id"
+                    )
                     ->join(
                         $cutAlias,
-                        MAUTIC_TABLE_PREFIX.'page_hits',
-                        $pageHitsAlias,
-                        "$cutAlias.redirect_id = $pageHitsAlias.redirect_id AND $cutAlias.channel_id = $pageHitsAlias.source_id"
+                        MAUTIC_TABLE_PREFIX.'email_stats',
+                        $statsAlias,
+                        "{$cutAlias}.channel_id = {$statsAlias}.email_id"
                     )
-                    ->andWhere("$cutAlias.channel = 'email'")
                     ->andWhere("{$pageHitsAlias}.date_hit IS NOT NULL")
                     ->andWhere("{$pageHitsAlias}.date_hit BETWEEN :dateFrom AND :dateTo")
-                    ->andWhere("$pageHitsAlias.source = 'email'")
-                    ->andWhere("$cutAlias.channel_id in (:source_ids)")
+                    ->andWhere("{$pageHitsAlias}.source = 'email'")
+                    ->andWhere("{$cutAlias}.channel = 'email'")
+                    ->andWhere("{$statsAlias}.source = 'campaign.event'")
+                    ->andWhere("{$statsAlias}.source_id IN (:source_ids)")
                     ->groupBy('hit_day')
                     ->getSQL()
                 .')',
@@ -972,23 +979,30 @@ class StatRepository extends CommonRepository
                 '('.
                 $this->getEntityManager()->getConnection()->createQueryBuilder()
                     ->select(
-                        'TIME_FORMAT(TIMESTAMPADD(SECOND, :timezoneOffset, date_hit), :format) AS hit_hour',
-                        'count(id) AS hit_count'
+                        "TIME_FORMAT(TIMESTAMPADD(SECOND, :timezoneOffset, {$pageHitsAlias}.date_hit), :format) AS hit_hour",
+                        "COUNT(DISTINCT {$pageHitsAlias}.id) AS hit_count"
                     )
-                    ->from(MAUTIC_TABLE_PREFIX.'channel_url_trackables', $cutAlias)
+                    ->from(MAUTIC_TABLE_PREFIX.'page_hits', $pageHitsAlias)
+                    ->join(
+                        $pageHitsAlias,
+                        MAUTIC_TABLE_PREFIX.'channel_url_trackables',
+                        $cutAlias,
+                        "{$cutAlias}.redirect_id = {$pageHitsAlias}.redirect_id"
+                    )
                     ->join(
                         $cutAlias,
-                        MAUTIC_TABLE_PREFIX.'page_hits',
-                        $pageHitsAlias,
-                        "$cutAlias.redirect_id = $pageHitsAlias.redirect_id AND $cutAlias.channel_id = $pageHitsAlias.source_id"
+                        MAUTIC_TABLE_PREFIX.'email_stats',
+                        $statsAlias,
+                        "{$cutAlias}.channel_id = {$statsAlias}.email_id"
                     )
-                    ->andWhere("$cutAlias.channel = 'email'")
-                    ->andWhere("$pageHitsAlias.source = 'email'")
                     ->andWhere("{$pageHitsAlias}.date_hit IS NOT NULL")
                     ->andWhere("{$pageHitsAlias}.date_hit BETWEEN :dateFrom AND :dateTo")
-                    ->andWhere("$cutAlias.channel_id in (:source_ids)")
-                    ->orderBy('hit_hour', 'ASC')
+                    ->andWhere("{$pageHitsAlias}.source = 'email'")
+                    ->andWhere("{$cutAlias}.channel = 'email'")
+                    ->andWhere("{$statsAlias}.source = 'campaign.event'")
+                    ->andWhere("{$statsAlias}.source_id IN (:source_ids)")
                     ->groupBy('hit_hour')
+                    ->orderBy('hit_hour', 'ASC')
                     ->getSQL()
                 .')',
                 $clickAlias,
