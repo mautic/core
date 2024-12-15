@@ -14,7 +14,7 @@
         <ul class="list-group" role="tablist">
             <li role="presentation" class="list-group-item active">
                 <a href="#dwc--generator-plugins" aria-controls="dwc--generator-plugins" role="tab" data-toggle="tab">
-                    <div class="d-flex jc-space-between">
+                    <div class="d-flex jc-space-between mb-sm">
                         <h4 class="list-group-item-heading fw-sb">{{ 'mautic.dynamiccontent.generator.plugins'|trans }}</h4>
                         <i class="ri-apps-2-add-fill ri-lg"></i>
                     </div>
@@ -23,7 +23,7 @@
             </li>
             <li role="presentation" class="list-group-item">
                 <a href="#dwc--generator-html" aria-controls="dwc--generator-html" role="tab" data-toggle="tab">
-                    <div class="d-flex jc-space-between">
+                    <div class="d-flex jc-space-between mb-sm">
                         <h4 class="list-group-item-heading fw-sb">{{ 'mautic.dynamiccontent.generator.html'|trans }}</h4>
                         <i class="ri-html5-fill ri-lg"></i>
                     </div>
@@ -106,7 +106,11 @@
                         size: 'sm',
                         attributes: {
                         'class': 'ma-0',
-                        'type': 'button'
+                        'type': 'button',
+                        'data-toggle': 'popover',
+                        'title': 'mautic.dynamiccontent.generator.html_tag_title'|trans,
+                        'data-content': 'mautic.dynamiccontent.generator.html_tag_info'|trans,
+                        'data-container': 'body',
                         }
                         }
                         ]
