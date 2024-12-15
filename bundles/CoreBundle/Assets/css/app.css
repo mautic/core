@@ -2387,6 +2387,9 @@ a.text-white.dark-lg:hover {
   color: #595959;
 }
 .text-primary {
+  color: var(--text-primary);
+}
+.text-interactive {
   color: var(--interactive);
 }
 .text-success {
