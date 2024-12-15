@@ -27,26 +27,26 @@
 
             <ul class="list-group list-group-tabs">
                 <li class="list-group-item active">
-                    <a href="#profile" class="list-group-item-text steps" data-toggle="tab">
+                    <a href="#profile" class="list-group-item-heading steps" data-toggle="tab">
                         {{ 'mautic.user.account.header.details'|trans }}
                     </a>
                 </li>
 
                 {% if permissions['apiAccess'] %}
                 <li class="list-group-item">
-                    <a href="#clients" class="list-group-item-text steps" data-toggle="tab">
+                    <a href="#clients" class="list-group-item-heading steps" data-toggle="tab">
                         {{ 'mautic.user.account.header.authorizedclients'|trans }}
                     </a>
                 </li>
                 {% endif %}
 
                 <li class="list-group-item">
-                    <a href="#appearance" class="list-group-item-text steps" data-toggle="tab">{{
+                    <a href="#appearance" class="list-group-item-heading steps" data-toggle="tab">{{
                         'mautic.user.account.appearance'|trans }}</a>
                 </li>
 
                 <li class="list-group-item">
-                    <a href="#accessibility" class="list-group-item-text steps" data-toggle="tab">{{
+                    <a href="#accessibility" class="list-group-item-heading steps" data-toggle="tab">{{
                         'mautic.user.account.accessibility'|trans }}</a>
                 </li>
             </ul>

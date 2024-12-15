@@ -40,7 +40,7 @@ id="{{ id|escape }}" name="{{ full_name|escape }}" {{ disabled ? 'disabled="disa
         {% set class = (child.vars.checked is not empty ? ' active' : '') ~ (child.vars.disabled is not empty or (attribute(attr, 'readonly') is defined and attr.readonly is not empty) ? ' disabled' : '') %}
         <label class="btn {{ class }} btn-block mt-0 list-group-item">
             {{ form_widget(child, {'attr': attr}) }}
-            <span class="list-group-item-text btn-block text-left">{{ child.vars.label|trans }}</span>
+            <span class="list-group-item-heading btn-block text-left">{{ child.vars.label|trans }}</span>
         </label>
     {% endfor %}
 </div>

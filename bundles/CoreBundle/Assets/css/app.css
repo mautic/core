@@ -5798,30 +5798,30 @@ a.media {
 .list-group.list-group-tabs .list-group-item.active {
   background-color: var(--layer-selected-inverse);
 }
-.list-group.list-group-tabs .list-group-item.active .list-group-item-text {
+.list-group.list-group-tabs .list-group-item.active .list-group-item-heading {
   color: var(--text-inverse);
 }
 .list-group.list-group-tabs .list-group-item > a,
 .list-group.list-group-tabs .list-group-item > label,
-.list-group.list-group-tabs .list-group-item .list-group-item-text {
+.list-group.list-group-tabs .list-group-item .list-group-item-heading {
   padding: 10px 15px;
   outline: 2px var(--outline-style) transparent;
   outline-offset: -2px;
 }
 .list-group.list-group-tabs .list-group-item > a:hover,
 .list-group.list-group-tabs .list-group-item > label:hover,
-.list-group.list-group-tabs .list-group-item .list-group-item-text:hover {
+.list-group.list-group-tabs .list-group-item .list-group-item-heading:hover {
   outline: 2px var(--outline-style) transparent;
 }
 .list-group.list-group-tabs .list-group-item > a:focus,
 .list-group.list-group-tabs .list-group-item > label:focus,
-.list-group.list-group-tabs .list-group-item .list-group-item-text:focus,
+.list-group.list-group-tabs .list-group-item .list-group-item-heading:focus,
 .list-group.list-group-tabs .list-group-item > a.focus,
 .list-group.list-group-tabs .list-group-item > label.focus,
-.list-group.list-group-tabs .list-group-item .list-group-item-text.focus,
+.list-group.list-group-tabs .list-group-item .list-group-item-heading.focus,
 .list-group.list-group-tabs .list-group-item > a:focus-visible,
 .list-group.list-group-tabs .list-group-item > label:focus-visible,
-.list-group.list-group-tabs .list-group-item .list-group-item-text:focus-visible {
+.list-group.list-group-tabs .list-group-item .list-group-item-heading:focus-visible {
   outline: 2px var(--outline-style) var(--focus);
 }
 .nav-justified .list-group-item.btn {
@@ -5855,16 +5855,17 @@ a.media {
 }
 .list-group-item > a,
 .list-group-item > label,
-.list-group-item .list-group-item-text {
+.list-group-item .list-group-item-heading {
   position: relative;
   z-index: 1;
   display: block;
   cursor: pointer;
+  margin-bottom: unset;
   color: var(--text-secondary);
 }
 .list-group-item > a input,
 .list-group-item > label input,
-.list-group-item .list-group-item-text input {
+.list-group-item .list-group-item-heading input {
   position: absolute;
   top: 0;
   left: 0;
@@ -5879,7 +5880,9 @@ a.media {
 .list-group-item:hover {
   background-color: var(--layer-hover);
 }
-.list-group-item:hover > a {
+.list-group-item:hover > a,
+.list-group-item:hover > label,
+.list-group-item:hover .list-group-item-heading {
   color: var(--text-primary);
 }
 a.list-group-item:hover,

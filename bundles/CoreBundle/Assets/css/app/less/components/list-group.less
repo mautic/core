@@ -27,10 +27,10 @@
 
     &.active {
       background-color: var(--layer-selected-inverse);
-      .list-group-item-text { color: var(--text-inverse); }
+      .list-group-item-heading { color: var(--text-inverse); }
     }
 
-    > a, > label, .list-group-item-text {
+    > a, > label, .list-group-item-heading {
       padding: 10px 15px;
       .outline();
     }
@@ -63,11 +63,12 @@
     outline: 2px solid var(--focus);
   }
 
-  > a, > label, .list-group-item-text {
+  > a, > label, .list-group-item-heading {
     position: relative;
     z-index: 1;
     display: block;
     cursor: pointer;
+    margin-bottom: unset;
     color: @list-group-link-color;
 
     input {
@@ -87,7 +88,7 @@
   &:hover {
     background-color: @list-group-hover-bg;
 
-    > a {
+    > a, > label, .list-group-item-heading {
       color: @list-group-link-hover-color;
     }
   }
