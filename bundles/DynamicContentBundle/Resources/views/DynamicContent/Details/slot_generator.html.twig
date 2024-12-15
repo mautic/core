@@ -1,61 +1,151 @@
 <div class="row">
-    <div class="col-xs-3">
-        <div class="list-group">
-            <a href="#" class="list-group-item active">
-                <div class="d-flex">
-                    <h4 class="list-group-item-heading fw-sb">Plugins</h4>
-                    <i class="ri-apps-2-add-fill"></i>
-                </div>
-                <p class="list-group-item-text">This option is compatible with community plugins available in common CMS.</p>
-            </a>
-            <a href="#" class="list-group-item">
-                <div class="d-flex">
-                    <h4 class="list-group-item-heading fw-sb">HTML</h4>
-                    <i class="ri-html5-fill"></i>
-                </div>
-                <p class="list-group-item-text">Choose this to ensure maximum compatibility with any website that have the tracking script installed.</p>
-            </a>
-          </div>
+    <div class="col-xs-12">
+        <h3 class="mt-lg mb-md">Deployment options</h3>
     </div>
-    <div class="col-xs-8">
-        <div class="tile">
-            <div class="dwc--generator-toolbar d-flex fd-column jc-space-between">
-                {% include '@MauticCore/Helper/button.html.twig' with {
-                    buttons: [
+    <div class="col-xs-4">
+        <ul class="list-group" role="tablist">
+            <li role="presentation" class="list-group-item active">
+                <a href="#dwc--generator-plugins" aria-controls="dwc--generator-plugins" role="tab" data-toggle="tab">
+                    <div class="d-flex jc-space-between">
+                        <h4 class="list-group-item-heading fw-sb">Plugins</h4>
+                        <i class="ri-apps-2-add-fill ri-lg"></i>
+                    </div>
+                    <p class="list-group-item-text">This option is compatible with community plugins available in common CMS.</p>
+                </a>
+            </li>
+            <li role="presentation" class="list-group-item">
+                <a href="#dwc--generator-html" aria-controls="dwc--generator-html" role="tab" data-toggle="tab">
+                    <div class="d-flex jc-space-between">
+                        <h4 class="list-group-item-heading fw-sb">HTML</h4>
+                        <i class="ri-html5-fill ri-lg"></i>
+                    </div>
+                    <p class="list-group-item-text">Choose this to ensure maximum compatibility with any website that have the tracking script installed.</p>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="col-xs-8 tab-content">
+        <div role="tabpanel" class="tab-pane fade in active" id="dwc--generator-plugins">
+            <div class="tile">
+                <div class="d-flex fg-1">
+                    <div class="dwc--generator-toolbar d-flex fd-column jc-space-between ai-start mr-md">
+                        {% include '@MauticCore/Helper/button.html.twig' with {
+                        buttons: [
                         {
-                            icon: 'ri-brackets-line',
-                            label: 'Change code wrapper',
-                            icon_only: true,
-                            variant: 'ghost'
-                        },
-                        {
-                            icon: 'ri-braces-line',
-                            label: 'Change code wrapper',
-                            icon_only: true,
-                            variant: 'ghost'
-                        },
-                        {
-                            icon: 'ri-question-line',
-                            label: 'More information',
-                            icon_only: true,
-                            variant: 'ghost'
+                        icon: 'ri-brackets-line ri-lg',
+                        label: 'Change code wrapper',
+                        icon_only: true,
+                        variant: 'ghost',
+                        size: 'sm',
+                        attributes: {
+                        'class': 'ma-0'
                         }
-                    ]
-                } %}
+                        },
+                        {
+                        icon: 'ri-braces-line ri-lg',
+                        label: 'Change code wrapper',
+                        icon_only: true,
+                        variant: 'ghost',
+                        size: 'sm',
+                        attributes: {
+                        'class': 'ma-0 hidden'
+                        }
+                        },
+                        {
+                        icon: 'ri-question-line ri-lg',
+                        label: 'More information',
+                        icon_only: true,
+                        variant: 'ghost',
+                        size: 'sm',
+                        attributes: {
+                        'class': 'ma-0',
+                        'data-toggle': 'popover',
+                        'title': 'When to change brackets and braces',
+                        'data-content': 'For Joomla, the plugin uses the syntax XXX'
+                        }
+                        }
+                        ]
+                        } %}
 
-            </div>
-            <div class="dwc--generator-content">
-                <div class="dwc--generator-content-code"></div>
-                <div class="dwc--generator-content-help"></div>
+                    </div>
+                    <div class="dwc--generator-content d-flex fd-column fg-1 text-muted">
+                        <pre class="dwc--generator-content-code d-flex fd-column fg-1 gap-md pa-0 fs-16 text-muted">{mautic type="content" slot="{{ entity.slotName }}"} <div class="dwc--generator-content-editable d-flex gap-4 ai-center ml-lg"> <i class="ri-pencil-line" title="Add your own default content to ensure it displays when the filters aren’t matching - for example with new anonymous visitors or a Contact that doesn’t match the criteria you have specified." data-toggle="tooltip"></i><input class="dwc--generator-content-input" type="text"></div>{/mautic}
+                        </pre>
+                        <div class="dwc--generator-content-help small">
+                            <i class="ri-information-2-line"></i>
+                            The preview content will be discarded when closing this window.
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <div role="tabpanel" class="tab-pane fade" id="dwc--generator-html">
+            <div class="tile">
+                <div class="d-flex fg-1">
+                    <div class="dwc--generator-toolbar d-flex fd-column jc-space-between ai-start mr-md">
+                        {% include '@MauticCore/Helper/button.html.twig' with {
+                        buttons: [
+                        {
+                        icon: 'ri-brackets-line ri-lg',
+                        label: 'Change code wrapper',
+                        icon_only: true,
+                        variant: 'ghost',
+                        size: 'sm',
+                        attributes: {
+                        'class': 'ma-0'
+                        }
+                        },
+                        {
+                        icon: 'ri-braces-line ri-lg',
+                        label: 'Change code wrapper',
+                        icon_only: true,
+                        variant: 'ghost',
+                        size: 'sm',
+                        attributes: {
+                        'class': 'ma-0 hidden'
+                        }
+                        },
+                        {
+                        icon: 'ri-question-line ri-lg',
+                        label: 'More information',
+                        icon_only: true,
+                        variant: 'ghost',
+                        size: 'sm',
+                        attributes: {
+                        'class': 'ma-0'
+                        }
+                        }
+                        ]
+                        } %}
+
+                    </div>
+                    <div class="dwc--generator-content d-flex fd-column fg-1 text-muted">
+                        <pre class="dwc--generator-content-code d-flex fd-column fg-1 gap-md pa-0 fs-16 text-muted">{{ '<div
+    data-slot="dwc"
+    data-param-slot-name="' ~ entity.slotName ~ '">'|raw }}<div class="dwc--generator-content-editable d-flex gap-4 ai-center ml-lg">
+                                    <i class="ri-pencil-line ml-lg" title="Add your own default content to ensure it displays when the filters aren’t matching - for example with new anonymous visitors or a Contact that doesn’t match the criteria you have specified." data-toggle="tooltip"></i>
+                                    <input class="dwc--generator-content-input" type="text">
+                                </div>{{ '</div>'|escape }}</pre>
+                        <div class="dwc--generator-content-help small">
+                            <i class="ri-information-2-line"></i>
+                            The preview content will be discarded when closing this window.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {% include '@MauticCore/Helper/button.html.twig' with {
-            buttons: [
-                {
-                    label: 'Copy dynamic content slot',
-                    icon: 'ri-clipboard-line'
-                }
-            ]
+        buttons: [
+        {
+        label: 'Copy dynamic content slot',
+        icon: 'ri-clipboard-line',
+        variant: 'secondary',
+        size: 'xl',
+        wide: 'true',
+        }
+        ]
         } %}
 
     </div>
