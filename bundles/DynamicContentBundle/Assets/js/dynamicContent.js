@@ -7,6 +7,175 @@ Mautic.toggleDwcFilters = function () {
     }
 };
 
+var Mautic = Mautic || {};
+
+Mautic.dwcGenerator = (function() {
+    // Selectors
+    var copyBtnSelector = '#generator-copy-dynamic-content-slot';
+    var pluginTabSelector = '#dwc--generator-plugins';
+    var htmlTabSelector = '#dwc--generator-html';
+    var codeContainerSelector = '.dwc--generator-content-code';
+    var inputSelector = '.dwc--generator-content-input';
+    var switchCodeWrapperBtnSelector = '#generator-switch-code-wrapper';
+    var switchHtmlTagBtnSelector = '#generator-switch-html-tag';
+
+    // State variables
+    var isPluginBracketMode = true; // True means {mautic ...}, false means [mautic ...]
+    var isUsingDiv = true; // True means using <div> for HTML snippet, false means using <span>
+
+    function getActiveTabType() {
+        // Identify which tab is active by looking for a .tab-pane.active
+        var activePane = document.querySelector('.tab-pane.active.in') || document.querySelector('.tab-pane.active');
+        if (!activePane) {
+            return 'plugin'; // default if none found
+        }
+        if (activePane.id === 'dwc--generator-plugins') {
+            return 'plugin';
+        } else if (activePane.id === 'dwc--generator-html') {
+            return 'html';
+        }
+        return 'plugin';
+    }
+
+    /**
+     * Toggle between {mautic ...} and [mautic ...] in the plugin snippet
+     */
+    function switchCodeWrapper() {
+        var pluginTab = document.querySelector(pluginTabSelector);
+        if (!pluginTab) return;
+
+        var pre = pluginTab.querySelector(codeContainerSelector);
+        if (!pre) return;
+
+        var code = pre.textContent;
+
+        if (isPluginBracketMode) {
+            // {mautic ...} -> [mautic ...]
+            code = code.replace(/\{mautic/g, '[mautic');
+            code = code.replace(/\{\/mautic/g, '[/mautic');
+            code = code.replace(/\}/g, ']');
+        } else {
+            // [mautic ...] -> {mautic ...}
+            code = code.replace(/\[mautic/g, '{mautic');
+            code = code.replace(/\[\/mautic/g, '{/mautic');
+            code = code.replace(/\]/g, '}');
+        }
+
+        pre.textContent = code;
+        isPluginBracketMode = !isPluginBracketMode;
+    }
+
+    /**
+     * Toggle between <div> and <span> in the HTML snippet.
+     * The snippet is partially HTML-encoded (&lt;div ...) for the slot tags,
+     * and has a real HTML tag for the editable block.
+     */
+    function switchHtmlTag() {
+        var htmlTab = document.querySelector(htmlTabSelector);
+        if (!htmlTab) return;
+
+        var pre = htmlTab.querySelector(codeContainerSelector);
+        if (!pre) return;
+
+        var code = pre.textContent;
+        // The HTML snippet starts as:
+        // &lt;div data-slot="dwc" data-param-slot-name="slotname"&gt;
+        // <div class="dwc--generator-content-editable ..."><input ...></div>
+        // &lt;/div&gt;
+
+        // We'll toggle the outer tag from div to span in the encoded part.
+        if (isUsingDiv) {
+            // Replace &lt;div ...&gt; with &lt;span ...&gt; for the outer tag
+            code = code.replace(/&lt;div([^>]*)&gt;/, '&lt;span$1&gt;');
+            code = code.replace(/&lt;\/div&gt;/, '&lt;\/span&gt;');
+
+            // Also replace the real inner block's <div> with <span> if needed
+            // If we need to switch the inner editable block as well:
+            code = code.replace(/<div([^>]*dwc--generator-content-editable[^>]*)>/, '<span$1>');
+            code = code.replace(/<\/div>/, '</span>');
+        } else {
+            // Replace &lt;span ...&gt; with &lt;div ...&gt;
+            code = code.replace(/&lt;span([^>]*)&gt;/, '&lt;div$1&gt;');
+            code = code.replace(/&lt;\/span&gt;/, '&lt;\/div&gt;');
+
+            // Also replace the inner <span> back to <div>
+            code = code.replace(/<span([^>]*dwc--generator-content-editable[^>]*)>/, '<div$1>');
+            code = code.replace(/<\/span>/, '</div>');
+        }
+
+        pre.textContent = code;
+        isUsingDiv = !isUsingDiv;
+    }
+
+    /**
+     * Copy the current code to the clipboard
+     */
+    function copyCode() {
+        var activeTab = getActiveTabType();
+        var container;
+
+        if (activeTab === 'plugin') {
+            container = document.querySelector(pluginTabSelector + ' ' + codeContainerSelector);
+        } else {
+            container = document.querySelector(htmlTabSelector + ' ' + codeContainerSelector);
+        }
+
+        if (!container) return;
+
+        // First, get the input element and its value from the DOM as it is now.
+        var input = container.querySelector(inputSelector);
+        var userValue = input ? input.value : '';
+
+        // Now get the code text after we've retrieved the user value.
+        var code = container.textContent;
+
+        // Replace the editable block with the user's input.
+        var editableBlockRegex = /<(?:div|span)[^>]*class="dwc--generator-content-editable"[^>]*>.*?<input[^>]*>.*?<\/(?:div|span)>/s;
+        code = code.replace(editableBlockRegex, function() {
+            // Insert userValue, surrounded by newlines for clarity
+            return '\n' + userValue + '\n';
+        });
+
+        // Copy the resulting code to clipboard
+        navigator.clipboard.writeText(code).then(function() {
+            alert('Copied to clipboard!');
+        }, function() {
+            alert('Failed to copy. Please try again.');
+        });
+    }
+
+
+    function init() {
+        // Copy button
+        var copyBtn = document.querySelector(copyBtnSelector);
+        if (copyBtn) {
+            copyBtn.addEventListener('click', copyCode);
+        }
+
+        // Switch code wrapper button (plugin)
+        var switchCodeBtn = document.querySelector(switchCodeWrapperBtnSelector);
+        if (switchCodeBtn) {
+            switchCodeBtn.addEventListener('click', switchCodeWrapper);
+        }
+
+        // Switch HTML tag button (html)
+        var switchTagBtn = document.querySelector(switchHtmlTagBtnSelector);
+        if (switchTagBtn) {
+            switchTagBtn.addEventListener('click', switchHtmlTag);
+        }
+    }
+
+    return {
+        init: init
+    };
+})();
+
+// Initialize after DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    Mautic.dwcGenerator.init();
+});
+
+
 Mautic.dynamicContentOnLoad = function (container, response) {
     if (typeof container !== 'object') {
         if (mQuery(container + ' #list-search').length) {
