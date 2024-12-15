@@ -47,23 +47,33 @@ Mautic.dwcGenerator = (function() {
         var pre = pluginTab.querySelector(codeContainerSelector);
         if (!pre) return;
 
-        var code = pre.textContent;
+        // Store the input value before making changes
+        var input = pre.querySelector(inputSelector);
+        var inputValue = input ? input.value : '';
+
+        var code = pre.innerHTML;
 
         if (isPluginBracketMode) {
             // {mautic ...} -> [mautic ...]
             code = code.replace(/\{mautic/g, '[mautic');
-            code = code.replace(/\{\/mautic/g, '[/mautic');
-            code = code.replace(/\}/g, ']');
+            code = code.replace(/\{\/mautic\}/g, '[/mautic]');
         } else {
             // [mautic ...] -> {mautic ...}
             code = code.replace(/\[mautic/g, '{mautic');
-            code = code.replace(/\[\/mautic/g, '{/mautic');
-            code = code.replace(/\]/g, '}');
+            code = code.replace(/\[\/mautic\]/g, '{/mautic}');
         }
 
-        pre.textContent = code;
+        pre.innerHTML = code;
+
+        // Restore the input value after the HTML is updated
+        var newInput = pre.querySelector(inputSelector);
+        if (newInput && inputValue) {
+            newInput.value = inputValue;
+        }
+
         isPluginBracketMode = !isPluginBracketMode;
     }
+
 
     /**
      * Toggle between <div> and <span> in the HTML snippet.
@@ -77,35 +87,40 @@ Mautic.dwcGenerator = (function() {
         var pre = htmlTab.querySelector(codeContainerSelector);
         if (!pre) return;
 
-        var code = pre.textContent;
-        // The HTML snippet starts as:
-        // &lt;div data-slot="dwc" data-param-slot-name="slotname"&gt;
-        // <div class="dwc--generator-content-editable ..."><input ...></div>
-        // &lt;/div&gt;
+        var code = pre.innerHTML;
 
-        // We'll toggle the outer tag from div to span in the encoded part.
+        // Store the input value before making changes
+        var input = pre.querySelector(inputSelector);
+        var inputValue = input ? input.value : '';
+
+        // Store the entire editable div block
+        var editableDiv = pre.querySelector('.dwc--generator-content-editable');
+        var editableDivHtml = editableDiv ? editableDiv.outerHTML : '';
+
         if (isUsingDiv) {
-            // Replace &lt;div ...&gt; with &lt;span ...&gt; for the outer tag
-            code = code.replace(/&lt;div([^>]*)&gt;/, '&lt;span$1&gt;');
-            code = code.replace(/&lt;\/div&gt;/, '&lt;\/span&gt;');
-
-            // Also replace the real inner block's <div> with <span> if needed
-            // If we need to switch the inner editable block as well:
-            code = code.replace(/<div([^>]*dwc--generator-content-editable[^>]*)>/, '<span$1>');
-            code = code.replace(/<\/div>/, '</span>');
+            // Replace <div> with <span>
+            code = code.replace(/&lt;div/, '&lt;span');
+            code = code.replace(/&lt;\/div&gt;/, '&lt;/span&gt;');
         } else {
-            // Replace &lt;span ...&gt; with &lt;div ...&gt;
-            code = code.replace(/&lt;span([^>]*)&gt;/, '&lt;div$1&gt;');
-            code = code.replace(/&lt;\/span&gt;/, '&lt;\/div&gt;');
-
-            // Also replace the inner <span> back to <div>
-            code = code.replace(/<span([^>]*dwc--generator-content-editable[^>]*)>/, '<div$1>');
-            code = code.replace(/<\/span>/, '</div>');
+            // Replace <span> with <div>
+            code = code.replace(/&lt;span/, '&lt;div');
+            code = code.replace(/&lt;\/span&gt;/, '&lt;/div&gt;');
         }
 
-        pre.textContent = code;
+        // Re-insert the editable div block
+        code = code.replace(/&gt;.*?&lt;\//, '&gt;' + editableDivHtml + '&lt;/');
+
+        pre.innerHTML = code;
+
+        // Restore the input value after the HTML is updated
+        var newInput = pre.querySelector(inputSelector);
+        if (newInput && inputValue) {
+            newInput.value = inputValue;
+        }
+
         isUsingDiv = !isUsingDiv;
     }
+
 
     /**
      * Copy the current code to the clipboard
@@ -122,28 +137,53 @@ Mautic.dwcGenerator = (function() {
 
         if (!container) return;
 
-        // First, get the input element and its value from the DOM as it is now.
+        // Get the full content from the pre element
+        var code = container.innerHTML;
+
+        // Find the input element within the pre block
         var input = container.querySelector(inputSelector);
         var userValue = input ? input.value : '';
 
-        // Now get the code text after we've retrieved the user value.
-        var code = container.textContent;
+        // Different replacement patterns for plugin and HTML tabs
+        if (activeTab === 'plugin') {
+            // Replace the editable div block with user input for plugin format
+            var editableBlockRegex = /<div class="dwc--generator-content-editable.*?<\/div>/s;
+            code = code.replace(editableBlockRegex, '\n' + userValue + '\n');
 
-        // Replace the editable block with the user's input.
-        var editableBlockRegex = /<(?:div|span)[^>]*class="dwc--generator-content-editable"[^>]*>.*?<input[^>]*>.*?<\/(?:div|span)>/s;
-        code = code.replace(editableBlockRegex, function() {
-            // Insert userValue, surrounded by newlines for clarity
-            return '\n' + userValue + '\n';
-        });
+            // Clean up and format plugin code
+            code = code.replace(/\s+/g, ' ')
+                     .replace(/{mautic/, '\n{mautic')
+                     .replace(/{\/mautic}/, '\n{/mautic}\n')
+                     .trim();
+        } else {
+            // Replace the editable div block with user input for HTML format
+            var editableBlockRegex = /<div class="dwc--generator-content-editable.*?<\/div>/s;
+            code = code.replace(editableBlockRegex, userValue);
 
-        // Copy the resulting code to clipboard
+            // Clean up HTML entities
+            code = code.replace(/&lt;/g, '<')
+                     .replace(/&gt;/g, '>')
+                     .trim();
+        }
+
+        // Copy to clipboard
         navigator.clipboard.writeText(code).then(function() {
             alert('Copied to clipboard!');
-        }, function() {
-            alert('Failed to copy. Please try again.');
+        }).catch(function() {
+            // Fallback for browsers that don't support clipboard API
+            var textarea = document.createElement('textarea');
+            textarea.value = code;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                alert('Copied to clipboard!');
+            } catch (err) {
+                alert('Failed to copy. Please try again.');
+            }
+            document.body.removeChild(textarea);
         });
     }
-
 
     function init() {
         // Copy button

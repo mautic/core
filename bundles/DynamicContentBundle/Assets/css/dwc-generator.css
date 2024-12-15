@@ -23,3 +23,7 @@
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
+
+.dwc--generator-content-code {
+    white-space: pre-wrap;
+}
