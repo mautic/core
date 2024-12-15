@@ -4650,7 +4650,7 @@ fieldset[disabled] .btn-ghost.btn-icon.focus i {
   color: #fcbdb1;
 }
 .alert-growl-container {
-  position: absolute;
+  position: fixed;
   top: 20px;
   right: 20px;
   z-index: 100000;
