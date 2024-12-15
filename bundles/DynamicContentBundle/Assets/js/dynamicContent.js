@@ -7,8 +7,6 @@ Mautic.toggleDwcFilters = function () {
     }
 };
 
-var Mautic = Mautic || {};
-
 Mautic.dwcGenerator = (function() {
     // Selectors
     const copyBtnSelector = '#generator-copy-dynamic-content-slot';
@@ -23,19 +21,22 @@ Mautic.dwcGenerator = (function() {
     let isPluginBracketMode = true; // True means {mautic ...}, false means [mautic ...]
     let isUsingDiv = true; // True means using <div> for HTML snippet, false means using <span>
 
+    // Determine the active tab (plugin or HTML)
     const getActiveTabType = () => {
         const activePane = document.querySelector('.tab-pane.active.in') || document.querySelector('.tab-pane.active');
-        if (!activePane) return 'plugin'; // Default if none found
+        if (!activePane) return 'plugin'; // Default to 'plugin' if none found
         return activePane.id === 'dwc--generator-plugins' ? 'plugin' : 'html';
     };
 
     const toggleState = (currentState) => !currentState;
 
+    // Restore input value after content changes
     const updateInputValue = (container, inputValue) => {
         const input = container.querySelector(inputSelector);
         if (input && inputValue !== null) input.value = inputValue;
     };
 
+    // Toggle between {mautic ...} and [mautic ...] in the plugin tab
     const switchCodeWrapper = () => {
         const pluginTab = document.querySelector(pluginTabSelector);
         if (!pluginTab) return;
@@ -48,13 +49,13 @@ Mautic.dwcGenerator = (function() {
         let code = pre.innerHTML;
 
         if (isPluginBracketMode) {
-            // Going from {} to []
+            // Convert {mautic ...} to [mautic ...]
             code = code
                 .replace(/\{mautic/g, '[mautic')
                 .replace(/slot=".*?"\}/g, match => match.replace('}', ']')) // Replace } with ] in the first part
                 .replace(/\{\/mautic\}/g, '[/mautic]');
         } else {
-            // Going from [] to {}
+            // Convert [mautic ...] to {mautic ...}
             code = code
                 .replace(/\[mautic/g, '{mautic')
                 .replace(/slot=".*?"\]/g, match => match.replace(']', '}')) // Replace ] with } in the first part
@@ -66,6 +67,7 @@ Mautic.dwcGenerator = (function() {
         isPluginBracketMode = toggleState(isPluginBracketMode);
     };
 
+    // Toggle between <div> and <span> in the HTML tab
     const switchHtmlTag = () => {
         const htmlTab = document.querySelector(htmlTabSelector);
         if (!htmlTab) return;
@@ -77,6 +79,7 @@ Mautic.dwcGenerator = (function() {
         const inputValue = input ? input.value : '';
         let code = pre.innerHTML;
 
+        // Replace HTML tags based on the current state
         code = isUsingDiv
             ? code.replace(/&lt;div/g, '&lt;span').replace(/&lt;\/div&gt;/g, '&lt;/span&gt;')
             : code.replace(/&lt;span/g, '&lt;div').replace(/&lt;\/span&gt;/g, '&lt;/div&gt;');
@@ -86,20 +89,7 @@ Mautic.dwcGenerator = (function() {
         isUsingDiv = toggleState(isUsingDiv);
     };
 
-    const copyCodeToClipboard = (code) => {
-        navigator.clipboard.writeText(code).catch(() => {
-            const textarea = document.createElement('textarea');
-            textarea.value = code;
-            document.body.appendChild(textarea);
-            textarea.select();
-            try {
-                document.execCommand('copy');
-            } finally {
-                document.body.removeChild(textarea);
-            }
-        });
-    };
-
+    // Copy the current code snippet to the clipboard, customized for the active tab
     const copyCode = () => {
         const activeTab = getActiveTabType();
         const container = document.querySelector(
@@ -113,28 +103,25 @@ Mautic.dwcGenerator = (function() {
         let code;
 
         if (activeTab === 'plugin') {
-            // Fixed the bracket consistency
-            const wrapper = isPluginBracketMode ?
-                {
-                    open: '{mautic type="content" slot="really_beautifulcontent"}',
-                    close: '{/mautic}'
-                } :
-                {
-                    open: '[mautic type="content" slot="really_beautifulcontent"]',
-                    close: '[/mautic]'
-                };
+            // Create the plugin snippet with the appropriate bracket style
+            const wrapper = isPluginBracketMode
+                ? { open: '{mautic type="content" slot="really_beautifulcontent"}', close: '{/mautic}' }
+                : { open: '[mautic type="content" slot="really_beautifulcontent"]', close: '[/mautic]' };
 
             code = `${wrapper.open}${userValue}${wrapper.close}`.trim();
         } else {
+            // Create the HTML snippet
             code = `<div data-slot="dwc" data-param-slot-name="really_beautifulcontent">${userValue}</div>`;
         }
 
         navigator.clipboard.writeText(code).then(() => {
+            // Show success flash message using Mautic's UI system
             const flashMessage = Mautic.addInfoFlashMessage(Mautic.translate('mautic.core.copied'));
             Mautic.setFlashes(flashMessage);
         });
     };
 
+    // Initialize event listeners for all buttons
     const init = () => {
         const copyBtn = document.querySelector(copyBtnSelector);
         if (copyBtn) copyBtn.addEventListener('click', copyCode);
@@ -149,11 +136,6 @@ Mautic.dwcGenerator = (function() {
     return { init };
 })();
 
-document.addEventListener('DOMContentLoaded', () => {
-    Mautic.dwcGenerator.init();
-});
-
-
 Mautic.dynamicContentOnLoad = function (container, response) {
     if (typeof container !== 'object') {
         if (mQuery(container + ' #list-search').length) {
@@ -165,6 +147,7 @@ Mautic.dynamicContentOnLoad = function (container, response) {
     Mautic.activateChosenSelect(availableFilters, false);
 
     Mautic.dynamicFiltersOnLoad('div.dwc-filter');
+    Mautic.dwcGenerator.init();
 };
 
 Mautic.dynamicFiltersOnLoad = function(container, response) {
