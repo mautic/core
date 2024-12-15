@@ -36,7 +36,7 @@
               {%- if form.default_daterange_filter is defined %}<div class="col-md-6">{{ form_row(form.default_daterange_filter) }}</div>{% endif %}
           </div>
 
-          <hr class="text-muted" />
+          <hr class="text-secondary" />
 
           <div class="row">
               {%- if form.date_format_full is defined %}<div class="col-md-6">{{ form_row(form.date_format_full) }}</div>{% endif %}
@@ -73,7 +73,7 @@
               {%- if form.trusted_proxies is defined %}<div class="col-md-6">{{ form_row(form.trusted_proxies) }}</div>{% endif %}
           </div>
 
-          {% if fields.trusted_hosts is defined %}<hr class="text-muted" />{% endif %}
+          {% if fields.trusted_hosts is defined %}<hr class="text-secondary" />{% endif %}
 
           <div class="row">
               {%- if form.ip_lookup_service is defined %}<div class="col-md-6">{{ form_row(form.ip_lookup_service) }}</div>{% endif %}
@@ -90,7 +90,7 @@
           </div>
 
           {% if fields.do_not_track_ips is defined or fields.do_not_track_bots is defined %}
-              <hr class="text-muted" />
+              <hr class="text-secondary" />
               <div class="row">
                   {%- if form.do_not_track_ips is defined %}<div class="col-md-6">{{ form_row(form.do_not_track_ips) }}</div>{% endif %}
                   {%- if form.do_not_track_bots is defined %}<div class="col-md-6">{{ form_row(form.do_not_track_bots) }}</div>{% endif %}
@@ -98,14 +98,14 @@
           {% endif %}
 
           {% if fields.max_entity_lock_time is defined %}
-            <hr class="text-muted" />
+            <hr class="text-secondary" />
             <div class="row">
                 {%- if form.max_entity_lock_time is defined %}<div class="col-md-6">{{ form_row(form.max_entity_lock_time) }}</div>{% endif %}
             </div>
           {% endif %}
 
           {%- if form.shortener_service is defined %}
-              <hr class="text-muted" />
+              <hr class="text-secondary" />
               <div class="row">
                   <div class="col-md-6">
                       {{ form_label(form.shortener_service) }}
@@ -131,7 +131,7 @@
           {% endif %}
 
           {% if fields.transliterate_page_title or fields.load_froala_assets is defined %}
-            <hr class="text-muted" />
+            <hr class="text-secondary" />
             <div class="row">
                 {%- if form.transliterate_page_title is defined %}<div class="col-md-6">{{ form_row(form.transliterate_page_title) }}</div>{% endif %}
                 {%- if form.load_froala_assets is defined %}
