@@ -1,3 +1,5 @@
+<link rel="stylesheet" type="text/css" href="{{ asset('app/bundles/DynamicContentBundle/Assets/css/dwc-generator.css') }}">
+
 <div class="row">
     <div class="col-xs-12">
         <h3 class="mt-lg mb-md">Deployment options</h3>
@@ -10,7 +12,7 @@
                         <h4 class="list-group-item-heading fw-sb">Plugins</h4>
                         <i class="ri-apps-2-add-fill ri-lg"></i>
                     </div>
-                    <p class="list-group-item-text">This option is compatible with community plugins available in common CMS.</p>
+                    <p class="list-group-item-text">Compatible with popular CMS community plugins.</p>
                 </a>
             </li>
             <li role="presentation" class="list-group-item">
@@ -19,36 +21,27 @@
                         <h4 class="list-group-item-heading fw-sb">HTML</h4>
                         <i class="ri-html5-fill ri-lg"></i>
                     </div>
-                    <p class="list-group-item-text">Choose this to ensure maximum compatibility with any website that have the tracking script installed.</p>
+                    <p class="list-group-item-text">Works with any website using our tracking script.</p>
                 </a>
             </li>
         </ul>
     </div>
     <div class="col-xs-8 tab-content">
         <div role="tabpanel" class="tab-pane fade in active" id="dwc--generator-plugins">
-            <div class="tile">
+            <div class="tile dwc--generator-wrapper">
                 <div class="d-flex fg-1">
-                    <div class="dwc--generator-toolbar d-flex fd-column jc-space-between ai-start mr-md">
+                    <div class="dwc--generator-toolbar pa-xs layer-two d-flex fd-column jc-space-between ai-start mr-md">
                         {% include '@MauticCore/Helper/button.html.twig' with {
                         buttons: [
                         {
                         icon: 'ri-brackets-line ri-lg',
-                        label: 'Change code wrapper',
+                        label: 'Switch code wrapper',
                         icon_only: true,
                         variant: 'ghost',
                         size: 'sm',
                         attributes: {
-                        'class': 'ma-0'
-                        }
-                        },
-                        {
-                        icon: 'ri-braces-line ri-lg',
-                        label: 'Change code wrapper',
-                        icon_only: true,
-                        variant: 'ghost',
-                        size: 'sm',
-                        attributes: {
-                        'class': 'ma-0 hidden'
+                        'class': 'ma-0',
+                        'type': 'button'
                         }
                         },
                         {
@@ -61,17 +54,19 @@
                         'class': 'ma-0',
                         'data-toggle': 'popover',
                         'title': 'When to change brackets and braces',
-                        'data-content': 'For Joomla, the plugin uses the syntax XXX'
+                        'data-content': 'For Joomla, the plugin uses the syntax XXX',
+                        'data-container': 'body',
+                        'type': 'button'
                         }
                         }
                         ]
                         } %}
 
                     </div>
-                    <div class="dwc--generator-content d-flex fd-column fg-1 text-secondary">
-                        <pre class="dwc--generator-content-code d-flex fd-column fg-1 gap-md pa-0 fs-16 text-secondary">{mautic type="content" slot="{{ entity.slotName }}"} <div class="dwc--generator-content-editable d-flex gap-4 ai-center ml-lg"> <i class="ri-pencil-line" title="Add your own default content to ensure it displays when the filters aren’t matching - for example with new anonymous visitors or a Contact that doesn’t match the criteria you have specified." data-toggle="tooltip"></i><input class="dwc--generator-content-input" type="text"></div>{/mautic}
+                    <div class="dwc--generator-content mt-md mb-sm d-flex fd-column fg-1">
+                        <pre class="dwc--generator-content-code d-flex fd-column fg-1 gap-md pa-0 fs-16 text-helper">{mautic type="content" slot="{{ entity.slotName }}"} <div class="dwc--generator-content-editable layer-two d-inline-flex gap-4 ai-center ml-lg text-primary"> <i class="ri-pencil-line ri-sm" title="Add your own default content to ensure it displays when the filters aren’t matching - for example with new anonymous visitors or a Contact that doesn’t match the criteria you have specified." data-toggle="tooltip"></i><input class="dwc--generator-content-input" type="text"></div>{/mautic}
                         </pre>
-                        <div class="dwc--generator-content-help small">
+                        <div class="dwc--generator-content-help text-helper small">
                             <i class="ri-information-2-line"></i>
                             The preview content will be discarded when closing this window.
                         </div>
@@ -81,29 +76,20 @@
         </div>
 
         <div role="tabpanel" class="tab-pane fade" id="dwc--generator-html">
-            <div class="tile">
+            <div class="tile dwc--generator-wrapper">
                 <div class="d-flex fg-1">
-                    <div class="dwc--generator-toolbar d-flex fd-column jc-space-between ai-start mr-md">
+                    <div class="dwc--generator-toolbar pa-xs layer-two d-flex fd-column jc-space-between ai-start mr-md">
                         {% include '@MauticCore/Helper/button.html.twig' with {
                         buttons: [
                         {
-                        icon: 'ri-brackets-line ri-lg',
-                        label: 'Change code wrapper',
+                        icon: 'ri-code-s-slash-line ri-lg',
+                        label: 'Switch HTML tag',
                         icon_only: true,
                         variant: 'ghost',
                         size: 'sm',
                         attributes: {
-                        'class': 'ma-0'
-                        }
-                        },
-                        {
-                        icon: 'ri-braces-line ri-lg',
-                        label: 'Change code wrapper',
-                        icon_only: true,
-                        variant: 'ghost',
-                        size: 'sm',
-                        attributes: {
-                        'class': 'ma-0 hidden'
+                        'class': 'ma-0',
+                        'type': 'button'
                         }
                         },
                         {
@@ -113,21 +99,22 @@
                         variant: 'ghost',
                         size: 'sm',
                         attributes: {
-                        'class': 'ma-0'
+                        'class': 'ma-0',
+                        'type': 'button'
                         }
                         }
                         ]
                         } %}
 
                     </div>
-                    <div class="dwc--generator-content d-flex fd-column fg-1 text-secondary">
-                        <pre class="dwc--generator-content-code d-flex fd-column fg-1 gap-md pa-0 fs-16 text-secondary">{{ '<div
+                    <div class="dwc--generator-content mt-md mb-sm d-flex fd-column fg-1">
+                        <pre class="dwc--generator-content-code d-flex fd-column fg-1 gap-md pa-0 fs-16 text-helper">{{ '<div
     data-slot="dwc"
-    data-param-slot-name="' ~ entity.slotName ~ '">'|raw }}<div class="dwc--generator-content-editable d-flex gap-4 ai-center ml-lg">
-                                    <i class="ri-pencil-line ml-lg" title="Add your own default content to ensure it displays when the filters aren’t matching - for example with new anonymous visitors or a Contact that doesn’t match the criteria you have specified." data-toggle="tooltip"></i>
+    data-param-slot-name="' ~ entity.slotName ~ '">'|raw }}<div class="dwc--generator-content-editable layer-two d-inline-flex gap-4 ai-center ml-lg text-primary">
+                                    <i class="ri-pencil-line ri-sm" title="Add your own default content to ensure it displays when the filters aren’t matching - for example with new anonymous visitors or a Contact that doesn’t match the criteria you have specified." data-toggle="tooltip"></i>
                                     <input class="dwc--generator-content-input" type="text">
                                 </div>{{ '</div>'|escape }}</pre>
-                        <div class="dwc--generator-content-help small">
+                        <div class="dwc--generator-content-help text-helper small">
                             <i class="ri-information-2-line"></i>
                             The preview content will be discarded when closing this window.
                         </div>
@@ -144,6 +131,9 @@
         variant: 'secondary',
         size: 'xl',
         wide: 'true',
+        attributes: {
+            'class': 'dwc--generator-copy'
+        }
         }
         ]
         } %}
