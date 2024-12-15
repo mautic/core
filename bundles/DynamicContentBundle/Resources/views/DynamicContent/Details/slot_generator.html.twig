@@ -3,7 +3,7 @@
 {% set htmlcode %}
 <pre class="dwc--generator-content-code d-flex fd-column fg-1 gap-md pa-0 fs-16 text-helper">{{ '<div
     data-slot="dwc"
-    data-param-slot-name="' ~ entity.slotName ~ '">'|raw }}<div class="dwc--generator-content-editable layer-two d-inline-flex gap-4 ai-center ml-lg text-primary"><i class="ri-pencil-line ri-sm" title="{{ 'mautic.dynamiccontent.generator.default_content_tooltip'|trans }}" data-toggle="tooltip"></i><input class="dwc--generator-content-input" type="text"></div>{{ '</div>'|escape }}</pre>
+    data-param-slot-name="' ~ entity.slotName ~ '">'|raw }}<div class="dwc--generator-content-editable layer-two d-inline-flex gap-4 ai-center ml-lg text-primary"><i class="ri-pencil-line ri-sm" title="{{ 'mautic.dynamiccontent.generator.default_content_tooltip'|trans }}" data-toggle="tooltip"></i><input class="dwc--generator-content-input" type="text" placeholder="{{ 'mautic.dynamiccontent.generator.input_placeholder'|trans }}"></div>{{ '</div>'|escape }}</pre>
 {% endset %}
 
 <div class="row">
@@ -52,7 +52,7 @@
                         },
                         {
                         icon: 'ri-question-line ri-lg',
-                        label: 'mautic.dynamiccontent.generator.more_information',
+                        label: 'mautic.dynamiccontent.generator.more_information.plugins',
                         icon_only: true,
                         variant: 'ghost',
                         size: 'sm',
@@ -70,7 +70,7 @@
 
                     </div>
                     <div class="dwc--generator-content mt-md mb-sm d-flex fd-column fg-1">
-                        <pre class="dwc--generator-content-code d-flex fd-column fg-1 gap-md pa-0 fs-16 text-helper">{mautic type="content" slot="{{ entity.slotName }}"} <div class="dwc--generator-content-editable layer-two d-inline-flex gap-4 ai-center ml-lg text-primary"> <i class="ri-pencil-line ri-sm" title="{{ 'mautic.dynamiccontent.generator.default_content_tooltip'|trans }}" data-toggle="tooltip"></i><input class="dwc--generator-content-input" type="text"></div>{/mautic}
+                        <pre class="dwc--generator-content-code d-flex fd-column fg-1 gap-md pa-0 fs-16 text-helper">{mautic type="content" slot="{{ entity.slotName }}"} <div class="dwc--generator-content-editable layer-two d-inline-flex gap-4 ai-center ml-lg text-primary"> <i class="ri-pencil-line ri-sm" title="{{ 'mautic.dynamiccontent.generator.default_content_tooltip'|trans }}" data-toggle="tooltip"></i><input class="dwc--generator-content-input" type="text" placeholder="{{ 'mautic.dynamiccontent.generator.input_placeholder'|trans }}"></div>{/mautic}
                         </pre>
                         <div class="dwc--generator-content-help text-helper small">
                             <i class="ri-information-2-line"></i>
@@ -100,7 +100,7 @@
                         },
                         {
                         icon: 'ri-question-line ri-lg',
-                        label: 'mautic.dynamiccontent.generator.more_information',
+                        label: 'mautic.dynamiccontent.generator.more_information.html',
                         icon_only: true,
                         variant: 'ghost',
                         size: 'sm',
