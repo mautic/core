@@ -1,0 +1,25 @@
+.dwc--generator-content-input {
+    border: none;
+}
+
+.dwc--generator-toolbar {
+    background-color: var(--layer);
+    border-radius: var(--border-radius-sm);
+}
+
+.dwc--generator-content-editable {
+    background-color: var(--layer);
+    width: fit-content;
+    padding: 3px 14px;
+    border-radius: 28px;
+}
+
+.dwc--generator-wrapper {
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.dwc--generator-copy {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
