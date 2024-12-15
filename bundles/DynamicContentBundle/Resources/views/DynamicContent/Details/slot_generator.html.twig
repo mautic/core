@@ -1,27 +1,33 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('app/bundles/DynamicContentBundle/Assets/css/dwc-generator.css') }}">
 
+{% set htmlcode %}
+<pre class="dwc--generator-content-code d-flex fd-column fg-1 gap-md pa-0 fs-16 text-helper">{{ '<div
+    data-slot="dwc"
+    data-param-slot-name="' ~ entity.slotName ~ '">'|raw }}<div class="dwc--generator-content-editable layer-two d-inline-flex gap-4 ai-center ml-lg text-primary"><i class="ri-pencil-line ri-sm" title="{{ 'mautic.dynamiccontent.generator.default_content_tooltip'|trans }}" data-toggle="tooltip"></i><input class="dwc--generator-content-input" type="text"></div>{{ '</div>'|escape }}</pre>
+{% endset %}
+
 <div class="row">
     <div class="col-xs-12">
-        <h3 class="mt-lg mb-md">Deployment options</h3>
+        <h3 class="mt-lg mb-md">{{ 'mautic.dynamiccontent.generator.deployment_options'|trans }}</h3>
     </div>
     <div class="col-xs-4">
         <ul class="list-group" role="tablist">
             <li role="presentation" class="list-group-item active">
                 <a href="#dwc--generator-plugins" aria-controls="dwc--generator-plugins" role="tab" data-toggle="tab">
                     <div class="d-flex jc-space-between">
-                        <h4 class="list-group-item-heading fw-sb">Plugins</h4>
+                        <h4 class="list-group-item-heading fw-sb">{{ 'mautic.dynamiccontent.generator.plugins'|trans }}</h4>
                         <i class="ri-apps-2-add-fill ri-lg"></i>
                     </div>
-                    <p class="list-group-item-text">Compatible with popular CMS community plugins.</p>
+                    <p class="list-group-item-text">{{ 'mautic.dynamiccontent.generator.plugins_description'|trans }}</p>
                 </a>
             </li>
             <li role="presentation" class="list-group-item">
                 <a href="#dwc--generator-html" aria-controls="dwc--generator-html" role="tab" data-toggle="tab">
                     <div class="d-flex jc-space-between">
-                        <h4 class="list-group-item-heading fw-sb">HTML</h4>
+                        <h4 class="list-group-item-heading fw-sb">{{ 'mautic.dynamiccontent.generator.html'|trans }}</h4>
                         <i class="ri-html5-fill ri-lg"></i>
                     </div>
-                    <p class="list-group-item-text">Works with any website using our tracking script.</p>
+                    <p class="list-group-item-text">{{ 'mautic.dynamiccontent.generator.html_description'|trans }}</p>
                 </a>
             </li>
         </ul>
@@ -35,7 +41,7 @@
                         buttons: [
                         {
                         icon: 'ri-brackets-line ri-lg',
-                        label: 'Switch code wrapper',
+                        label: 'mautic.dynamiccontent.generator.switch_code_wrapper',
                         icon_only: true,
                         variant: 'ghost',
                         size: 'sm',
@@ -46,15 +52,15 @@
                         },
                         {
                         icon: 'ri-question-line ri-lg',
-                        label: 'More information',
+                        label: 'mautic.dynamiccontent.generator.more_information',
                         icon_only: true,
                         variant: 'ghost',
                         size: 'sm',
                         attributes: {
                         'class': 'ma-0',
                         'data-toggle': 'popover',
-                        'title': 'When to change brackets and braces',
-                        'data-content': 'For Joomla, the plugin uses the syntax XXX',
+                        'title': 'mautic.dynamiccontent.generator.when_to_change_brackets'|trans,
+                        'data-content': 'mautic.dynamiccontent.generator.joomla_syntax_info'|trans,
                         'data-container': 'body',
                         'type': 'button'
                         }
@@ -64,11 +70,11 @@
 
                     </div>
                     <div class="dwc--generator-content mt-md mb-sm d-flex fd-column fg-1">
-                        <pre class="dwc--generator-content-code d-flex fd-column fg-1 gap-md pa-0 fs-16 text-helper">{mautic type="content" slot="{{ entity.slotName }}"} <div class="dwc--generator-content-editable layer-two d-inline-flex gap-4 ai-center ml-lg text-primary"> <i class="ri-pencil-line ri-sm" title="Add your own default content to ensure it displays when the filters aren’t matching - for example with new anonymous visitors or a Contact that doesn’t match the criteria you have specified." data-toggle="tooltip"></i><input class="dwc--generator-content-input" type="text"></div>{/mautic}
+                        <pre class="dwc--generator-content-code d-flex fd-column fg-1 gap-md pa-0 fs-16 text-helper">{mautic type="content" slot="{{ entity.slotName }}"} <div class="dwc--generator-content-editable layer-two d-inline-flex gap-4 ai-center ml-lg text-primary"> <i class="ri-pencil-line ri-sm" title="{{ 'mautic.dynamiccontent.generator.default_content_tooltip'|trans }}" data-toggle="tooltip"></i><input class="dwc--generator-content-input" type="text"></div>{/mautic}
                         </pre>
                         <div class="dwc--generator-content-help text-helper small">
                             <i class="ri-information-2-line"></i>
-                            The preview content will be discarded when closing this window.
+                            {{ 'mautic.dynamiccontent.generator.preview_content_discard_notice'|trans }}
                         </div>
                     </div>
                 </div>
@@ -83,7 +89,7 @@
                         buttons: [
                         {
                         icon: 'ri-code-s-slash-line ri-lg',
-                        label: 'Switch HTML tag',
+                        label: 'mautic.dynamiccontent.generator.switch_html_tag',
                         icon_only: true,
                         variant: 'ghost',
                         size: 'sm',
@@ -94,7 +100,7 @@
                         },
                         {
                         icon: 'ri-question-line ri-lg',
-                        label: 'More information',
+                        label: 'mautic.dynamiccontent.generator.more_information',
                         icon_only: true,
                         variant: 'ghost',
                         size: 'sm',
@@ -108,15 +114,10 @@
 
                     </div>
                     <div class="dwc--generator-content mt-md mb-sm d-flex fd-column fg-1">
-                        <pre class="dwc--generator-content-code d-flex fd-column fg-1 gap-md pa-0 fs-16 text-helper">{{ '<div
-    data-slot="dwc"
-    data-param-slot-name="' ~ entity.slotName ~ '">'|raw }}<div class="dwc--generator-content-editable layer-two d-inline-flex gap-4 ai-center ml-lg text-primary">
-                                    <i class="ri-pencil-line ri-sm" title="Add your own default content to ensure it displays when the filters aren’t matching - for example with new anonymous visitors or a Contact that doesn’t match the criteria you have specified." data-toggle="tooltip"></i>
-                                    <input class="dwc--generator-content-input" type="text">
-                                </div>{{ '</div>'|escape }}</pre>
+                        {{ htmlcode }}
                         <div class="dwc--generator-content-help text-helper small">
                             <i class="ri-information-2-line"></i>
-                            The preview content will be discarded when closing this window.
+                            {{ 'mautic.dynamiccontent.generator.preview_content_discard_notice'|trans }}
                         </div>
                     </div>
                 </div>
@@ -126,7 +127,7 @@
         {% include '@MauticCore/Helper/button.html.twig' with {
         buttons: [
         {
-        label: 'Copy dynamic content slot',
+        label: 'mautic.dynamiccontent.generator.copy_dynamic_content_slot',
         icon: 'ri-clipboard-line',
         variant: 'secondary',
         size: 'xl',
