@@ -154,8 +154,9 @@
                                   {{ include('@MauticCore/Helper/chart.html.twig', {'chartData': entityViews, 'chartType': 'line', 'chartHeight': 300}) }}
                               </div>
                           </div>
-
-                          {{ include('@MauticDynamicContent/DynamicContent/Details/slot_generator.html.twig') }}
+                        {% if not entity.isCampaignBased %}
+                            {{ include('@MauticDynamicContent/DynamicContent/Details/slot_generator.html.twig') }}
+                        {% endif %}
                       </div>
                   </div>
               </div>
