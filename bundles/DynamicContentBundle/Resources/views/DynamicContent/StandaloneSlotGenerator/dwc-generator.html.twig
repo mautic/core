@@ -5,6 +5,7 @@
     data-slot="dwc"
     data-param-slot-name="' ~ entity.slotName ~ '">'|raw }}<div class="dwc--generator-content-editable layer-two d-inline-flex gap-4 ai-center ml-lg text-primary"><i class="ri-pencil-line ri-sm" title="{{ 'mautic.dynamiccontent.generator.default_content_tooltip'|trans }}" data-toggle="tooltip"></i><input class="dwc--generator-content-input" type="text" placeholder="{{ 'mautic.dynamiccontent.generator.input_placeholder'|trans }}"></div>{{ '</div>'|escape }}</pre>
 {% endset %}
+
 <hr>
 <div class="row mt-lg">
     <div class="col-xs-12">
@@ -36,6 +37,7 @@
                 </a>
             </li>
         </ul>
+        {{ include('@MauticDynamicContent/DynamicContent/StandaloneSlotGenerator/dwc-generator--help.html.twig') }}
     </div>
     <div class="col-xs-12 col-md-8 tab-content">
         <div role="tabpanel" class="tab-pane fade in active" id="dwc--generator-plugins">
