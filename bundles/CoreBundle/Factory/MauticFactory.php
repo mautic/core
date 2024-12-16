@@ -9,11 +9,7 @@ use Mautic\CoreBundle\Helper\DateTimeHelper;
 use Mautic\CoreBundle\Helper\ThemeHelper;
 use Mautic\CoreBundle\Model\AbstractCommonModel;
 use Mautic\CoreBundle\Security\Permissions\CorePermissions;
-use Mautic\CoreBundle\Twig\Helper\AssetsHelper;
-use Mautic\CoreBundle\Twig\Helper\SlotsHelper;
 use Mautic\EmailBundle\Helper\MailHelper;
-use Mautic\EmailBundle\MonitoredEmail\Mailbox;
-use Mautic\PluginBundle\Helper\IntegrationHelper;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -37,11 +33,6 @@ class MauticFactory
         private AuthorizationCheckerInterface $authorizationChecker,
         private RequestStack $requestStack,
         private ManagerRegistry $doctrine,
-        private Mailbox $mailbox,
-        private ThemeHelper $themeHelper,
-        private IntegrationHelper $integrationHelper,
-        private SlotsHelper $slotsHelper,
-        private AssetsHelper $assetsHelper,
         private LoggerInterface $logger,
     ) {
     }
@@ -237,31 +228,6 @@ class MauticFactory
         }
 
         return $this->container->get('monolog.logger.mautic');
-    }
-
-    /**
-     * Get a mautic helper service.
-     *
-     * @return object
-     */
-    public function getHelper($helper)
-    {
-        switch ($helper) {
-            case 'mailbox':
-                return $this->mailbox;
-            case 'theme':
-                return $this->themeHelper;
-            case 'integration':
-                return $this->integrationHelper;
-            case 'template.slots':
-                return $this->slotsHelper;
-            case 'template.assets':
-                return $this->assetsHelper;
-            default:
-                @trigger_error('MauticFactory::getHelper with "'.$helper.'" is deprecated.', E_USER_DEPRECATED);
-
-                return $this->container->get('mautic.helper.'.$helper);
-        }
     }
 
     public function getKernel(): ?KernelInterface
