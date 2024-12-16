@@ -5,9 +5,13 @@
     data-slot="dwc"
     data-param-slot-name="' ~ entity.slotName ~ '">'|raw }}<div class="dwc--generator-content-editable layer-two d-inline-flex gap-4 ai-center ml-lg text-primary"><i class="ri-pencil-line ri-sm" title="{{ 'mautic.dynamiccontent.generator.default_content_tooltip'|trans }}" data-toggle="tooltip"></i><input class="dwc--generator-content-input" type="text" placeholder="{{ 'mautic.dynamiccontent.generator.input_placeholder'|trans }}"></div>{{ '</div>'|escape }}</pre>
 {% endset %}
-
-<div class="row">
+<hr>
+<div class="row mt-lg">
     <div class="col-xs-12">
+        {% include '@MauticCore/Helper/_illustration.html.twig' with {
+            illustration: 'application--integration',
+            size: 80
+        } %}
         <h3 class="mt-lg mb-md">{{ 'mautic.dynamiccontent.generator.deployment_options'|trans }}</h3>
         <p class="text-muted mb-lg">{{ 'mautic.dynamiccontent.generator.deployment_instructions'|trans }}</p>
     </div>
