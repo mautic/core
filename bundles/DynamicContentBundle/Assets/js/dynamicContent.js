@@ -103,19 +103,21 @@ Mautic.dwcGenerator = (function() {
         let code;
 
         if (activeTab === 'plugin') {
-            // Create the plugin snippet with the appropriate bracket style
+            const slotMatch = container.textContent.match(/slot="([^"]+)"/);
+            const slotName = slotMatch ? slotMatch[1] : '';
             const wrapper = isPluginBracketMode
-                ? { open: '{mautic type="content" slot="really_beautifulcontent"}', close: '{/mautic}' }
-                : { open: '[mautic type="content" slot="really_beautifulcontent"]', close: '[/mautic]' };
+                ? { open: `{mautic type="content" slot="${slotName}"}`, close: '{/mautic}' }
+                : { open: `[mautic type="content" slot="${slotName}"]`, close: '[/mautic]' };
 
             code = `${wrapper.open}${userValue}${wrapper.close}`.trim();
         } else {
-            // Create the HTML snippet
-            code = `<div data-slot="dwc" data-param-slot-name="really_beautifulcontent">${userValue}</div>`;
+            const tag = isUsingDiv ? 'div' : 'span';
+            const slotMatch = container.innerHTML.match(/data-param-slot-name="([^"]+)"/);
+            const slotName = slotMatch ? slotMatch[1] : '';
+            code = `<${tag} data-slot="dwc" data-param-slot-name="${slotName}">${userValue}</${tag}>`;
         }
 
         navigator.clipboard.writeText(code).then(() => {
-            // Show success flash message using Mautic's UI system
             const flashMessage = Mautic.addInfoFlashMessage(Mautic.translate('mautic.core.copied'));
             Mautic.setFlashes(flashMessage);
         });
