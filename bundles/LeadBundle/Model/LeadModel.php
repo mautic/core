@@ -49,6 +49,7 @@ use Mautic\LeadBundle\Event\DoNotContactRemoveEvent;
 use Mautic\LeadBundle\Event\LeadEvent;
 use Mautic\LeadBundle\Event\LeadTimelineEvent;
 use Mautic\LeadBundle\Exception\ImportFailedException;
+use Mautic\LeadBundle\Field\FieldsWithUniqueIdentifier;
 use Mautic\LeadBundle\Form\Type\LeadType;
 use Mautic\LeadBundle\Helper\IdentifyCompanyHelper;
 use Mautic\LeadBundle\LeadEvents;
@@ -115,6 +116,7 @@ class LeadModel extends FormModel
         protected PathsHelper $pathsHelper,
         protected IntegrationHelper $integrationHelper,
         FieldModel $leadFieldModel,
+        protected FieldsWithUniqueIdentifier $fieldsWithUniqueIdentifier,
         protected ListModel $leadListModel,
         protected FormFactoryInterface $formFactory,
         protected CompanyModel $companyModel,
@@ -132,7 +134,7 @@ class LeadModel extends FormModel
         UrlGeneratorInterface $router,
         Translator $translator,
         UserHelper $userHelper,
-        LoggerInterface $mauticLogger
+        LoggerInterface $mauticLogger,
     ) {
         $this->leadFieldModel       = $leadFieldModel;
 
@@ -413,6 +415,8 @@ class LeadModel extends FormModel
             }
         }
 
+        $this->validateSelectFields($entity, $fields);
+
         $this->processManipulator($entity);
 
         $this->setEntityDefaultValues($entity);
@@ -643,11 +647,7 @@ class LeadModel extends FormModel
                 $results = $this->em->getRepository(User::class)->getUserList($filter, $limit, $start, ['lead' => 'leads']);
                 break;
             case 'contact':
-                $fetchResults = $this->getEntities([
-                    'start'          => $start,
-                    'limit'          => $limit,
-                    'filter'         => ['string' => $filter],
-                ]);
+                $fetchResults = $this->getEntities(['start' => $start, 'limit' => $limit, 'filter' => $filter]);
 
                 $results = [];
 
@@ -705,10 +705,7 @@ class LeadModel extends FormModel
         ]);
     }
 
-    /**
-     * @return bool
-     */
-    public function canEditContact(Lead $contact)
+    public function canEditContact(Lead $contact): bool
     {
         return $this->security->hasEntityAccess('lead:leads:editown', 'lead:leads:editother', $contact->getPermissionUser());
     }
@@ -809,7 +806,7 @@ class LeadModel extends FormModel
         }
 
         $lead            = new Lead();
-        $uniqueFields    = $this->leadFieldModel->getUniqueIdentifierFields();
+        $uniqueFields    = $this->fieldsWithUniqueIdentifier->getFieldsWithUniqueIdentifier();
         $uniqueFieldData = [];
         $inQuery         = array_intersect_key($queryFields, $this->availableLeadFields);
         $values          = $onlyPubliclyUpdateable ? $inQuery : $queryFields;
@@ -1252,7 +1249,7 @@ class LeadModel extends FormModel
             $log->setType('lead');
             $log->setEventName($this->translator->trans('mautic.lead.import.event.name'));
             $log->setActionName($this->translator->trans('mautic.lead.import.action.name', [
-                '%name%' => $this->userHelper->getUser()->getUsername(),
+                '%name%' => $this->userHelper->getUser()->getUserIdentifier(),
             ]));
             $log->setIpAddress($this->ipLookupHelper->getIpAddress());
             $log->setDateAdded(new \DateTime());
@@ -1286,7 +1283,7 @@ class LeadModel extends FormModel
                 $this->translator->trans(
                     'mautic.stage.import.action.name',
                     [
-                        '%name%' => $this->userHelper->getUser()->getUsername(),
+                        '%name%' => $this->userHelper->getUser()->getUserIdentifier(),
                     ]
                 )
             );
@@ -1300,7 +1297,7 @@ class LeadModel extends FormModel
             $doNotEmail = filter_var($data[$fields['doNotEmail']], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
             if (null !== $doNotEmail) {
                 $reason = $this->translator->trans('mautic.lead.import.by.user', [
-                    '%user%' => $this->userHelper->getUser()->getUsername(),
+                    '%user%' => $this->userHelper->getUser()->getUserIdentifier(),
                 ]);
 
                 // The email must be set for successful unsubscribtion
@@ -1623,8 +1620,10 @@ class LeadModel extends FormModel
 
         array_walk($tags, function (&$val): void {
             $val = html_entity_decode(trim($val), ENT_QUOTES);
-            $val = InputHelper::clean($val);
+            $val = InputHelper::_($val, 'string');
         });
+        // Remove any tags that became empty after filtering
+        $tags = array_filter($tags, fn ($tag) => strlen($tag) > 0);
 
         // See which tags already exist
         $foundTags = $this->getTagRepository()->getTagsByName($tags);
@@ -1661,8 +1660,10 @@ class LeadModel extends FormModel
 
             array_walk($removeTags, function (&$val): void {
                 $val = html_entity_decode(trim($val), ENT_QUOTES);
-                $val = InputHelper::clean($val);
+                $val = InputHelper::_($val, 'string');
             });
+            // Remove any tags that became empty after filtering
+            $removeTags = array_filter($removeTags, fn ($tag) => strlen($tag) > 0);
 
             // See which tags really exist
             $foundRemoveTags = $this->getTagRepository()->getTagsByName($removeTags);
@@ -2322,6 +2323,36 @@ class LeadModel extends FormModel
         if ($lead && $tag) {
             $lead->removeTag($tag);
             $this->saveEntity($lead);
+        }
+    }
+
+    /**
+     * @param array<mixed>|null $fields
+     */
+    private function validateSelectFields(Lead $entity, ?array $fields): void
+    {
+        if (is_null($fields)) {
+            return;
+        }
+        foreach ($fields as $groupFields) {
+            foreach ($groupFields as $field) {
+                if (!is_array($field)) {
+                    return;
+                } elseif ('select' !== $field['type']) {
+                    continue;
+                }
+                $allowedValues = is_array($field['properties'])
+                    ? $field['properties']
+                    : unserialize($field['properties']);
+
+                $flattenedAllowedValues = array_map(fn ($item): string => html_entity_decode($item['value'], ENT_QUOTES), $allowedValues['list']);
+
+                if (!empty($allowedValues['list']) && !in_array($field['value'], $flattenedAllowedValues)) {
+                    // if the set value of the field is not present allowed values array,
+                    // update the field value to null
+                    $entity->addUpdatedField($field['alias'], null);
+                }
+            }
         }
     }
 }

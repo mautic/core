@@ -527,7 +527,7 @@ class CommonRepository extends ServiceEntityRepository
         $alias = null,
         $setNowParameter = true,
         $setTrueParameter = true,
-        $allowNullForPublishedUp = true
+        $allowNullForPublishedUp = true,
     ) {
         $isORM = $q instanceof QueryBuilder;
 
@@ -807,7 +807,7 @@ class CommonRepository extends ServiceEntityRepository
         $this->getEntityManager()->persist($entity);
 
         if ($flush) {
-            $this->getEntityManager()->flush($entity);
+            $this->getEntityManager()->flush();
         }
     }
 
@@ -1114,7 +1114,7 @@ class CommonRepository extends ServiceEntityRepository
             );
         }
 
-        if ($ormQb && $filter->not) {
+        if ($filter->not) {
             $expr = $q->expr()->not($expr);
         }
 

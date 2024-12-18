@@ -42,7 +42,7 @@ class UserModel extends FormModel
         Translator $translator,
         UserHelper $userHelper,
         LoggerInterface $mauticLogger,
-        CoreParametersHelper $coreParametersHelper
+        CoreParametersHelper $coreParametersHelper,
     ) {
         parent::__construct($em, $security, $dispatcher, $router, $translator, $userHelper, $mauticLogger, $coreParametersHelper);
     }
@@ -287,6 +287,44 @@ class UserModel extends FormModel
             $this->translator->trans('mautic.user.user.passwordreset.subject'),
             $html
         );
+    }
+
+    /**
+     * @throws \RuntimeException
+     */
+    public function sendChangePasswordInfo(User $user): void
+    {
+        $text = $this->translator->trans(
+            'mautic.user.user.passwordchange.email.body',
+            ['%name%' => $user->getFirstName()]
+        );
+        $text = str_replace('\\n', "\n", $text);
+        $html = nl2br($text);
+
+        $this->emailUser(
+            $user,
+            $this->translator->trans('mautic.user.user.passwordchange.subject'),
+            $html
+        );
+    }
+
+    /**
+     * @throws \RuntimeException
+     */
+    public function sendChangeEmailInfo(string $oldEmail, User $user): void
+    {
+        $mailer = $this->mailHelper->getMailer();
+        $text   = $this->translator->trans(
+            'mautic.user.user.emailchange.email.body',
+            ['%name%' => $user->getFirstName()]
+        );
+        $text = str_replace('\\n', "\n", $text);
+        $html = nl2br($text);
+
+        $mailer->setTo([$oldEmail => $user->getName()]);
+        $mailer->setBody($html);
+        $mailer->setSubject($this->translator->trans('mautic.user.user.emailchange.subject'));
+        $mailer->send();
     }
 
     public function emailUser(User $user, string $subject, string $content): void

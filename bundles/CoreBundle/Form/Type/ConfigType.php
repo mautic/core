@@ -704,7 +704,7 @@ class ConfigType extends AbstractType
         $view->vars['ipLookupAttribution'] = (null !== $this->ipLookup) ? $this->ipLookup->getAttribution() : '';
     }
 
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'coreconfig';
     }

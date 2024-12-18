@@ -22,7 +22,6 @@ use Mautic\EmailBundle\Mailer\Transport\TokenTransportInterface;
 use Mautic\EmailBundle\MonitoredEmail\Mailbox;
 use Mautic\LeadBundle\Entity\Lead;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mailer\Transport\TransportInterface;
@@ -32,6 +31,7 @@ use Symfony\Component\Mime\Header\HeaderInterface;
 use Symfony\Component\Mime\Header\UnstructuredHeader;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Twig\Environment;
 
 class MailHelper
@@ -50,15 +50,16 @@ class MailHelper
 
     public const EMAIL_TYPE_MARKETING     = 'marketing';
 
+    private const DEFAULT_BODY            = [
+        'content'     => '',
+        'contentType' => 'text/html',
+        'charset'     => null,
+    ];
+
     /**
      * @var TransportInterface
      */
     protected $transport;
-
-    /**
-     * @var Environment
-     */
-    protected $twig;
 
     protected ?EventDispatcherInterface $dispatcher = null;
 
@@ -95,10 +96,7 @@ class MailHelper
      */
     protected $internalSend = false;
 
-    /**
-     * @var null
-     */
-    protected $idHash;
+    protected ?string $idHash = null;
 
     /**
      * @var bool
@@ -159,12 +157,14 @@ class MailHelper
     /**
      * @var string
      */
-    protected $subject = '';
+    protected $subject              = '';
+    private ?string $subjectInitial = null;
 
     /**
      * @var string
      */
-    protected $plainText = '';
+    protected $plainText              = '';
+    private ?string $plainTextInitial = null;
 
     /**
      * @var bool
@@ -194,11 +194,12 @@ class MailHelper
     /**
      * @var array
      */
-    protected $body = [
-        'content'     => '',
-        'contentType' => 'text/html',
-        'charset'     => null,
-    ];
+    protected $body = self::DEFAULT_BODY;
+
+    /**
+     * @var array<?string>
+     */
+    private ?array $bodyInitial = null;
 
     /**
      * Cache for lead owners.
@@ -231,7 +232,8 @@ class MailHelper
         private Mailbox $mailbox,
         private LoggerInterface $logger,
         private MailHashHelper $mailHashHelper,
-        private RouterInterface $router
+        private RouterInterface $router,
+        private Environment $twig,
     ) {
         $this->transport  = $this->getTransport();
         $this->returnPath = $coreParametersHelper->get('mailer_return_path');
@@ -599,13 +601,12 @@ class MailHelper
             $this->copies              = [];
             $this->message             = $this->getMessageInstance();
             $this->subject             = '';
+            $this->subjectInitial      = null;
             $this->plainText           = '';
+            $this->plainTextInitial    = null;
             $this->plainTextSet        = false;
-            $this->body                = [
-                'content'     => '',
-                'contentType' => 'text/html',
-                'charset'     => null,
-            ];
+            $this->body                = self::DEFAULT_BODY;
+            $this->bodyInitial         = null;
         }
     }
 
@@ -711,10 +712,6 @@ class MailHelper
      */
     public function setTemplate($template, $vars = [], $returnContent = false, $charset = null)
     {
-        if (null == $this->twig) {
-            $this->twig = $this->factory->getTwig();
-        }
-
         $content = $this->twig->render($template, $vars);
 
         unset($vars);
@@ -857,10 +854,8 @@ class MailHelper
 
     /**
      * Set to address(es).
-     *
-     * @return bool
      */
-    public function setTo($addresses, $name = null)
+    public function setTo($addresses, $name = null): bool
     {
         $name = $this->cleanName($name);
 
@@ -897,10 +892,8 @@ class MailHelper
      *
      * @param string      $address
      * @param string|null $name
-     *
-     * @return bool
      */
-    public function addTo($address, $name = null)
+    public function addTo($address, $name = null): bool
     {
         $this->checkBatchMaxRecipients();
 
@@ -923,10 +916,8 @@ class MailHelper
      * @param ?string               $name
      *
      * //TODO: there is a bug here, the name is not passed in CC nor in the array of addresses, we do not handle names for CC
-     *
-     * @return bool
      */
-    public function setCc($addresses, $name = null)
+    public function setCc($addresses, $name = null): bool
     {
         $this->checkBatchMaxRecipients(count($addresses), 'cc');
 
@@ -952,10 +943,8 @@ class MailHelper
      *
      * @param string  $address
      * @param ?string $name
-     *
-     * @return bool
      */
-    public function addCc($address, $name = null)
+    public function addCc($address, $name = null): bool
     {
         $this->checkBatchMaxRecipients(1, 'cc');
 
@@ -977,10 +966,8 @@ class MailHelper
      * @param ?string               $name
      *
      * //TODO: same bug for the name as the one we have in setCc
-     *
-     * @return bool
      */
-    public function setBcc($addresses, $name = null)
+    public function setBcc($addresses, $name = null): bool
     {
         $this->checkBatchMaxRecipients(count($addresses), 'bcc');
 
@@ -1007,10 +994,8 @@ class MailHelper
      *
      * @param string  $address
      * @param ?string $name
-     *
-     * @return bool
      */
-    public function addBcc($address, $name = null)
+    public function addBcc($address, $name = null): bool
     {
         $this->checkBatchMaxRecipients(1, 'bcc');
 
@@ -1464,13 +1449,27 @@ class MailHelper
             $this->dispatcher = $this->factory->getDispatcher();
         }
 
+        if (null === $this->bodyInitial) {
+            $this->bodyInitial = $this->body;
+        }
+
+        if (null === $this->plainTextInitial) {
+            $this->plainTextInitial = $this->plainText;
+        }
+
+        if (null === $this->subjectInitial) {
+            $this->subjectInitial = $this->subject;
+        }
+
+        // Reset body, text, subject and tokens, so the latter listeners use the same data as the former ones.
+        $this->setBody($this->bodyInitial['content'], $this->bodyInitial['contentType'], $this->bodyInitial['charset'], true);
+        $this->setPlainText($this->plainTextInitial);
+        $this->setSubject($this->subjectInitial);
+        $this->eventTokens = [];
+
         $event = new EmailSendEvent($this);
-
         $this->dispatcher->dispatch($event, EmailEvents::EMAIL_ON_SEND);
-
-        $this->eventTokens = array_merge($this->eventTokens, $event->getTokens(false));
-
-        unset($event);
+        $this->eventTokens = $event->getTokens(false);
     }
 
     /**

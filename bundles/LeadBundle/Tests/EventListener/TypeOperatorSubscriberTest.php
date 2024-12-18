@@ -38,12 +38,12 @@ final class TypeOperatorSubscriberTest extends \PHPUnit\Framework\TestCase
     private MockObject $listModel;
 
     /**
-     * @var MockObject&campaignModel
+     * @var MockObject&CampaignModel
      */
     private MockObject $campaignModel;
 
     /**
-     * @var MockObject&emailModel
+     * @var MockObject&EmailModel
      */
     private MockObject $emailModel;
 
@@ -508,10 +508,11 @@ final class TypeOperatorSubscriberTest extends \PHPUnit\Framework\TestCase
                 'filter',
                 TextType::class,
                 [
-                    'label'    => false,
-                    'attr'     => ['class' => 'form-control'],
-                    'disabled' => false,
-                    'data'     => '',
+                    'label'       => false,
+                    'attr'        => ['class' => 'form-control'],
+                    'disabled'    => false,
+                    'data'        => '',
+                    'constraints' => [],
                 ]
             );
 

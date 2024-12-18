@@ -55,7 +55,7 @@ class CampaignModel extends CommonFormModel
         Translator $translator,
         UserHelper $userHelper,
         LoggerInterface $mauticLogger,
-        CoreParametersHelper $coreParametersHelper
+        CoreParametersHelper $coreParametersHelper,
     ) {
         parent::__construct($em, $security, $dispatcher, $router, $translator, $userHelper, $mauticLogger, $coreParametersHelper);
     }
@@ -213,10 +213,7 @@ class CampaignModel extends CommonFormModel
         }
     }
 
-    /**
-     * @return array
-     */
-    public function setEvents(Campaign $entity, $sessionEvents, $sessionConnections, $deletedEvents)
+    public function setEvents(Campaign $entity, $sessionEvents, $sessionConnections, $deletedEvents): array
     {
         $existingEvents = $entity->getEvents()->toArray();
         $events         = [];
@@ -581,10 +578,8 @@ class CampaignModel extends CommonFormModel
 
     /**
      * Saves a campaign lead, logs the error if saving fails.
-     *
-     * @return bool
      */
-    public function saveCampaignLead(CampaignLead $campaignLead)
+    public function saveCampaignLead(CampaignLead $campaignLead): bool
     {
         try {
             $this->getCampaignLeadRepository()->saveEntity($campaignLead);
@@ -790,6 +785,44 @@ class CampaignModel extends CommonFormModel
     public function getCampaignIdsWithDependenciesOnEmail(int $emailId): array
     {
         return $this->getRepository()->getCampaignIdsWithDependenciesOnEmail($emailId);
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    public function getCampaignIdsWithDependenciesOnTagName(string $tagName): array
+    {
+        $entities = $this->getEventRepository()->getEntities(
+            [
+                'filter' => [
+                    'force'  => [
+                        [
+                            'column' => 'e.type',
+                            'expr'   => 'IN',
+                            'value'  => ['lead.changetags', 'lead.tags'],
+                        ],
+                    ],
+                ],
+            ]
+        );
+
+        $dependents = [];
+        /** @var Event $entity */
+        foreach ($entities as $entity) {
+            $type       = $entity->getType();
+            $properties = $entity->getProperties();
+            if ('lead.changetags' === $type) {
+                $eventTags = array_merge([], $properties['add_tags'], $properties['remove_tags']);
+            }
+            if ('lead.tags' === $type) {
+                $eventTags = $properties['tags'];
+            }
+            if (in_array($tagName, $eventTags)) {
+                $dependents[] = $entity->getCampaign()->getId();
+            }
+        }
+
+        return array_unique($dependents);
     }
 
     /**

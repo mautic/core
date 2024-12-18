@@ -90,7 +90,7 @@ final class MauticReportBuilder implements ReportBuilderInterface
         private EventDispatcherInterface $dispatcher,
         private Connection $db,
         private Report $entity,
-        private ChannelListHelper $channelListHelper
+        private ChannelListHelper $channelListHelper,
     ) {
     }
 
@@ -431,6 +431,7 @@ final class MauticReportBuilder implements ReportBuilderInterface
                                 $columnValue = (int) $filter['value'];
                                 break;
 
+                            case 'text':
                             case 'string':
                             case 'email':
                             case 'url':
