@@ -181,6 +181,7 @@ class ConfigType extends AbstractType
                     'class'   => 'form-control',
                     'tooltip' => 'mautic.core.config.form.locale.tooltip',
                 ],
+                'help'              => 'mautic.core.config.form.locale.help',
                 'placeholder'       => false,
             ]
         );
@@ -197,7 +198,8 @@ class ConfigType extends AbstractType
                         'class'   => 'form-control',
                         'tooltip' => 'mautic.core.config.form.trusted.hosts.tooltip',
                     ],
-                    'required' => false,
+                    'help'       => 'mautic.core.config.form.trusted_hosts.help',
+                    'required'   => false,
                 ]
             )->addViewTransformer($arrayStringTransformer)
         );
@@ -639,6 +641,7 @@ class ConfigType extends AbstractType
                         'tooltip'      => 'mautic.core.config.cors.valid.domains.tooltip',
                         'data-show-on' => '{"config_coreconfig_cors_restrict_domains_1":"checked"}',
                     ],
+                    'help'       => 'mautic.core.config.form.cors_valid_domains.help',
                 ]
             )->addViewTransformer($arrayLinebreakTransformer)
         );
