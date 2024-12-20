@@ -5848,9 +5848,6 @@ a.media {
   transition: var(--transition-all-productive);
   outline: 2px solid transparent;
 }
-.list-group-item:has(a:focus) {
-  outline: 2px solid var(--focus);
-}
 .list-group-item > a,
 .list-group-item > label,
 .list-group-item .list-group-item-text {
@@ -10906,4 +10903,7 @@ code:hover > .copy-icon {
 .gsearch--results-item:hover,
 .gsearch--results-item a:hover {
   color: var(--text-primary);
+}
+.gsearch--results-item:has(a:focus) {
+  outline: 2px solid var(--focus);
 }
