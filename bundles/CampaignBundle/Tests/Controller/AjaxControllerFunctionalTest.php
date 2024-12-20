@@ -129,12 +129,20 @@ class AjaxControllerFunctionalTest extends MauticMysqlTestCase
         Assert::assertIsArray($hoursDatasets);
         Assert::assertCount(3, $hoursDatasets);  // Assuming there are 3 datasets: Email sent, Email read, Email clicked
 
-        $expectedHoursLabels = [
-            '00:00-01:00', '01:00-02:00', '02:00-03:00', '03:00-04:00', '04:00-05:00', '05:00-06:00', '06:00-07:00',
-            '07:00-08:00', '08:00-09:00', '09:00-10:00', '10:00-11:00', '11:00-12:00', '12:00-13:00', '13:00-14:00',
-            '14:00-15:00', '15:00-16:00', '16:00-17:00', '17:00-18:00', '18:00-19:00', '19:00-20:00', '20:00-21:00',
-            '21:00-22:00', '22:00-23:00', '23:00-00:00',
-        ];
+        // Get the time format from CoreParametersHelper
+        $coreParametersHelper = self::getContainer()->get('mautic.helper.core_parameters');
+        $timeFormat           = $coreParametersHelper->get('date_format_timeonly');
+
+        // Generate expected hour labels based on the actual time format
+        $expectedHoursLabels = [];
+        for ($hour = 0; $hour < 24; ++$hour) {
+            $startTime             = (new \DateTime())->setTime($hour, 0);
+            $endTime               = (new \DateTime())->setTime(($hour + 1) % 24, 0);
+            $expectedHoursLabels[] = $startTime->format($timeFormat).' - '.$endTime->format($timeFormat);
+        }
+
+        Assert::assertEquals($expectedHoursLabels, $hoursData['labels']);
+
         $expectedHoursData = [
             ['label' => 'Email sent', 'data' => [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
             ['label' => 'Email read', 'data' => [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]],

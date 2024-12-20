@@ -123,18 +123,36 @@ Mautic.renderLineChart = function(canvas) {
 Mautic.renderHourChart = function(canvas) {
     const data = JSON.parse(canvas.text());
     const chart = new Chart(canvas, {
-        type: 'bar',
-        data: data,
+        type: 'line',
+        data,
         options: {
+            tooltips: { mode: 'index', intersect: false },
             scales: {
                 xAxes: [{
+                    gridLines: { display: false },
                     ticks: {
                         autoSkip: true,
                         maxTicksLimit: 6,
                         maxRotation: 0,
+                        callback: value => value.split(' - ')[0]
                     }
                 }],
-            },
+                yAxes: [{
+                    afterBuildTicks: scale => {
+                        scale.ticks = [scale.min, (scale.max - scale.min) / 2, scale.max];
+                    },
+                    gridLines: { drawBorder: false },
+                    ticks: {
+                        beginAtZero: true,
+                        callback: (value, index, values) => {
+                            if (index === 0 || index === values.length - 1) return value;
+                            if (/^\d+\.5$/.test(value.toString())) return '';
+                            if (index === Math.floor(values.length / 2)) return value !== 0.5 ? value : '';
+                            return '';
+                        }
+                    }
+                }]
+            }
         }
     });
     Mautic.chartObjects.push(chart);

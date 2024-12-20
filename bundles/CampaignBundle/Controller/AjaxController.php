@@ -227,8 +227,13 @@ class AjaxController extends CommonAjaxController
         $hoursRange = range(0, 23, 1);
         $labels     = [];
 
+        $timeFormat = $this->coreParametersHelper->get('date_format_timeonly');
+
         foreach ($hoursRange as $r) {
-            $labels[] = sprintf('%02d:00', $r).'-'.sprintf('%02d:00', fmod($r + 1, 24));
+            $startTime = (new \DateTime())->setTime($r, 0);
+            $endTime   = (new \DateTime())->setTime(($r + 1) % 24, 0);
+
+            $labels[] = $startTime->format($timeFormat).' - '.$endTime->format($timeFormat);
         }
 
         $chart  = new BarChart($labels);
