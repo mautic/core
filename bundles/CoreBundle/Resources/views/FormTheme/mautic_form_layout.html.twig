@@ -210,17 +210,38 @@ id="{{ id|escape }}" name="{{ full_name|escape }}" {{ disabled ? 'disabled="disa
 
 {# Twig version of MauticCoreBundle:Views:FormTheme:Custom:form_row.html.php #}
 {% block form_row %}
-{% set hasErrors = form.vars.errors|length %}
-{% set feedbackClass = hasErrors > 0 ? ' has-error' : '' %}
-<div class="row">
-    <div class="form-group col-xs-12{{ feedbackClass }}">
-        {{ form_label(form, label) }}
-        {{ form_widget(form) }}
-        {{ form_errors(form) }}
-        {{ form_help(form) }}
-    </div>
- </div>
+    {% set hasErrors = form.vars.errors|length %}
+    {% set feedbackClass = hasErrors > 0 ? ' has-error' : '' %}
+
+    {% if form.vars.id is defined and 'config_' in form.vars.id %}
+        {# New structure for config_ elements #}
+        <div class="row">
+        <div class="col-md-4">
+
+                {{ form_label(form, label) }}
+                {{ form_help(form) }}
+
+            </div>
+            <div class="col-md-8">
+                    <div class="form-group col-xs-12{{ feedbackClass }}">
+                        {{ form_widget(form) }}
+                        {{ form_errors(form) }}
+                    </div>
+                </div>
+            </div>
+    {% else %}
+        {# Original structure #}
+        <div class="row">
+            <div class="form-group col-xs-12 abc{{ feedbackClass }}">
+                {{ form_label(form, label) }}
+                {{ form_widget(form) }}
+                {{ form_errors(form) }}
+                {{ form_help(form) }}
+            </div>
+        </div>
+    {% endif %}
 {% endblock form_row %}
+
 
 {# Twig version of MauticCoreBundle:Views:FormTheme:Custom:form_start.html.php #}
 {% block form_start %}

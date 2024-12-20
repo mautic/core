@@ -9168,6 +9168,10 @@ lesshat-selector { -lh-property: 0 ;
 .pi-md {
   padding-inline: var(--spacing-05) !important;
 }
+.mi-16,
+.mi-md {
+  margin-inline: var(--spacing-05) !important;
+}
 .w-44 {
   width: 44px;
 }
