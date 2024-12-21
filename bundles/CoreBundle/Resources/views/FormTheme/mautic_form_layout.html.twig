@@ -28,7 +28,7 @@ id="{{ id|escape }}" name="{{ full_name|escape }}" {{ disabled ? 'disabled="disa
         {{ form_help(form) }}
     </div>
     <div class="col-md-8">
-        <div class="col-xs-12{{ feedbackClass }}">
+        <div class="{{ feedbackClass }}">
             {{ form_widget(form) }}
             {{ form_errors(form) }}
         </div>
@@ -121,7 +121,7 @@ id="{{ id|escape }}" name="{{ full_name|escape }}" {{ disabled ? 'disabled="disa
         {{ form_help(form) }}
     </div>
     <div class="col-md-8">
-        <div class="col-xs-12{{ feedbackClass }}">
+        <div class="{{ feedbackClass }}">
             {{ form_widget(form) }}
             {{ form_errors(form) }}
         </div>
@@ -249,7 +249,7 @@ id="{{ id|escape }}" name="{{ full_name|escape }}" {{ disabled ? 'disabled="disa
             {{ form_help(form) }}
         </div>
         <div class="col-md-8">
-            <div class="col-xs-12{{ feedbackClass }}">
+            <div class="{{ feedbackClass }}">
                 {{ form_widget(form) }}
                 {{ form_errors(form) }}
             </div>

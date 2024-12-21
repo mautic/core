@@ -6558,7 +6558,6 @@ label {
 }
 .control-label {
   color: var(--text-secondary);
-  white-space: nowrap;
 }
 .control-label.text-left {
   text-align: left;
