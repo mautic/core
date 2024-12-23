@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Mautic\LeadBundle\Tests\Field;
 
-use Monolog\Logger;
+use Mautic\CoreBundle\Doctrine\Helper\IndexSchemaHelper;
 use Mautic\LeadBundle\Entity\LeadField;
-use PHPUnit\Framework\MockObject\MockObject;
 use Mautic\LeadBundle\Field\CustomFieldIndex;
 use Mautic\LeadBundle\Field\FieldsWithUniqueIdentifier;
-use Mautic\CoreBundle\Doctrine\Helper\IndexSchemaHelper;
+use Monolog\Logger;
+use PHPUnit\Framework\MockObject\MockObject;
 
 final class CustomFieldIndexTest extends \PHPUnit\Framework\TestCase
 {

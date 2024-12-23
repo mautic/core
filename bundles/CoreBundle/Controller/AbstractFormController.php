@@ -4,7 +4,6 @@ namespace Mautic\CoreBundle\Controller;
 
 use Symfony\Component\Form\ClickableInterface;
 use Symfony\Component\Form\Form;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 

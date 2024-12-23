@@ -117,7 +117,7 @@ class WebhookModel extends FormModel
     /**
      * Timestamp when the webhook processing starts.
      */
-    private float|null $startTime = null;
+    private ?float $startTime = null;
 
     public function __construct(
         CoreParametersHelper $coreParametersHelper,

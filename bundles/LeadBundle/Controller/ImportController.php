@@ -663,7 +663,7 @@ class ImportController extends FormController
     protected function generateUrl(string $route, array $parameters = [], int $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH): string
     {
         if (!isset($parameters['object'])) {
-            $request = $this->getCurrentRequest();
+            $request              = $this->getCurrentRequest();
             $parameters['object'] = $request->get('object', 'contacts');
         }
 

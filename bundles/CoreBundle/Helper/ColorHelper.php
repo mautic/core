@@ -50,8 +50,6 @@ class ColorHelper
      * Populate color from hexadecimal code.
      *
      * @param string $hex in format #xxxxxx or #xxx
-     *
-     * @return ColorHelper
      */
     public function setHex(string $hex): self
     {

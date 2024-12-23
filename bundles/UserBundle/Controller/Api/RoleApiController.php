@@ -43,8 +43,8 @@ class RoleApiController extends CommonApiController
     }
 
     /**
-     * @param \Mautic\UserBundle\Entity\Role &$entity
-     * @param string                         $action
+     * @param Role   &$entity
+     * @param string $action
      */
     protected function preSaveEntity(&$entity, $form, $parameters, $action = 'edit')
     {

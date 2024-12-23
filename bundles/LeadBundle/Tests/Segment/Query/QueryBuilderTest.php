@@ -6,15 +6,15 @@ declare(strict_types=1);
 
 namespace Mautic\LeadBundle\Tests\Segment\Query;
 
-use Doctrine\DBAL\Driver;
-use Doctrine\DBAL\Connection;
-use PHPUnit\Framework\Assert;
-use PHPUnit\Framework\TestCase;
 use Doctrine\DBAL\ArrayParameterType;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
+use Mautic\LeadBundle\Segment\Query\Expression\ExpressionBuilder;
 use Mautic\LeadBundle\Segment\Query\QueryBuilder;
 use Mautic\LeadBundle\Segment\Query\QueryException;
-use Mautic\LeadBundle\Segment\Query\Expression\ExpressionBuilder;
+use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\TestCase;
 
 class QueryBuilderTest extends TestCase
 {

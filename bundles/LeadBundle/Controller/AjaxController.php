@@ -492,7 +492,6 @@ class AjaxController extends CommonAjaxController
         $channel     = $request->request->get('channel', 'email');
 
         if (!empty($dncId)) {
-
             /** @var DoNotContact $dnc */
             $dnc = $this->doctrine->getManager()->getRepository(DoNotContact::class)->findOneBy(
                 [

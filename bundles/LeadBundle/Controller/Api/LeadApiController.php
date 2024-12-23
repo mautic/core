@@ -2,38 +2,37 @@
 
 namespace Mautic\LeadBundle\Controller\Api;
 
-use Symfony\Component\Form\Form;
-use Mautic\LeadBundle\Entity\Lead;
-use Mautic\LeadBundle\Model\LeadModel;
-use Mautic\CoreBundle\Entity\IpAddress;
-use Mautic\CoreBundle\Helper\AppVersion;
-use Mautic\CoreBundle\Helper\UserHelper;
 use Doctrine\Persistence\ManagerRegistry;
-use Mautic\CoreBundle\Helper\ArrayHelper;
-use Mautic\CoreBundle\Helper\InputHelper;
-use Symfony\Component\Form\FormInterface;
-use Mautic\LeadBundle\Entity\DoNotContact;
-use Mautic\CoreBundle\Factory\ModelFactory;
+use Mautic\ApiBundle\Controller\CommonApiController;
+use Mautic\ApiBundle\Helper\EntityResultHelper;
+use Mautic\CoreBundle\Entity\IpAddress;
 use Mautic\CoreBundle\Factory\MauticFactory;
+use Mautic\CoreBundle\Factory\ModelFactory;
+use Mautic\CoreBundle\Helper\AppVersion;
+use Mautic\CoreBundle\Helper\ArrayHelper;
+use Mautic\CoreBundle\Helper\CoreParametersHelper;
 use Mautic\CoreBundle\Helper\DateTimeHelper;
+use Mautic\CoreBundle\Helper\InputHelper;
 use Mautic\CoreBundle\Helper\IpLookupHelper;
+use Mautic\CoreBundle\Helper\UserHelper;
+use Mautic\CoreBundle\Security\Permissions\CorePermissions;
 use Mautic\CoreBundle\Translation\Translator;
+use Mautic\LeadBundle\Controller\FrequencyRuleTrait;
+use Mautic\LeadBundle\Controller\LeadDetailsTrait;
+use Mautic\LeadBundle\DataObject\LeadManipulator;
+use Mautic\LeadBundle\Deduplicate\ContactMerger;
+use Mautic\LeadBundle\Deduplicate\Exception\SameContactException;
+use Mautic\LeadBundle\Entity\DoNotContact;
+use Mautic\LeadBundle\Entity\Lead;
+use Mautic\LeadBundle\Model\DoNotContact as DoNotContactModel;
+use Mautic\LeadBundle\Model\LeadModel;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
-use Mautic\ApiBundle\Helper\EntityResultHelper;
-use Mautic\LeadBundle\Deduplicate\ContactMerger;
-use Symfony\Component\Form\FormFactoryInterface;
-use Mautic\LeadBundle\DataObject\LeadManipulator;
-use Mautic\CoreBundle\Helper\CoreParametersHelper;
-use Mautic\LeadBundle\Controller\LeadDetailsTrait;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Mautic\ApiBundle\Controller\CommonApiController;
-use Mautic\LeadBundle\Controller\FrequencyRuleTrait;
-use Mautic\CoreBundle\Security\Permissions\CorePermissions;
-use Mautic\LeadBundle\Model\DoNotContact as DoNotContactModel;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Mautic\LeadBundle\Deduplicate\Exception\SameContactException;
 
 /**
  * @extends CommonApiController<Lead>

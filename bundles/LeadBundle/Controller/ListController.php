@@ -19,7 +19,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ListController extends FormController
 {
@@ -835,7 +834,7 @@ class ListController extends FormController
 
     protected function getIndexItems($start, $limit, $filter, $orderBy, $orderByDir, array $args = []): array
     {
-        $request = $this->getCurrentRequest();
+        $request        = $this->getCurrentRequest();
         $session        = $request->getSession();
         $currentFilters = $session->get('mautic.lead.list.list_filters', []);
         $updatedFilters = $request->get('filters', false);
@@ -896,8 +895,6 @@ class ListController extends FormController
 
         // Store for customizeViewArguments
         $this->listFilters = $listFilters;
-
-        $request = $this->getCurrentRequest();
 
         return parent::getIndexItems(
             $start,

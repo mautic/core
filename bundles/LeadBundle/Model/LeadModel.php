@@ -1595,9 +1595,9 @@ class LeadModel extends FormModel
     /**
      * Modify tags with support to remove via a prefixed minus sign.
      *
-     * @param bool $persist True if tags modified
-     * @param string[]|string $tags can be CSV string
-     * @param string[] $removeTags
+     * @param bool            $persist    True if tags modified
+     * @param string[]|string $tags       can be CSV string
+     * @param string[]        $removeTags
      */
     public function modifyTags(Lead $lead, $tags, ?array $removeTags = null, bool $persist = true): bool
     {

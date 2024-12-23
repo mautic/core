@@ -4,7 +4,6 @@ namespace Mautic\StatsBundle\Tests\Aggregate\Collection\DAO;
 
 use Mautic\StatsBundle\Aggregate\Collection\DAO\StatsDAO;
 use Mautic\StatsBundle\Aggregate\Collection\Stats\DayStat;
-use Mautic\StatsBundle\Aggregate\Collection\Stats\HourStat;
 use Mautic\StatsBundle\Aggregate\Collection\Stats\MonthStat;
 use Mautic\StatsBundle\Aggregate\Collection\Stats\WeekStat;
 use Mautic\StatsBundle\Aggregate\Collection\Stats\YearStat;
