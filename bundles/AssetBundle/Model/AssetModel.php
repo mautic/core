@@ -107,13 +107,12 @@ class AssetModel extends FormModel
     }
 
     /**
-     * @param string $code
-     * @param array  $systemEntry
+     * @param array $systemEntry
      *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Exception
      */
-    public function trackDownload($asset, $request = null, $code = '200', $systemEntry = []): void
+    public function trackDownload($asset, $request = null, int $code = 200, $systemEntry = []): void
     {
         // Don't skew results with in-house downloads
         if (empty($systemEntry) && !$this->security->isAnonymous()) {

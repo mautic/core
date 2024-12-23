@@ -2,63 +2,65 @@
 
 namespace Mautic\FormBundle\Model;
 
-use Doctrine\ORM\EntityManager;
+use Twig\Environment;
+use Psr\Log\LoggerInterface;
 use Doctrine\ORM\ORMException;
-use Mautic\CampaignBundle\Entity\Campaign;
-use Mautic\CampaignBundle\Membership\MembershipManager;
-use Mautic\CampaignBundle\Model\CampaignModel;
-use Mautic\CoreBundle\Exception\FileUploadException;
-use Mautic\CoreBundle\Helper\Chart\ChartQuery;
-use Mautic\CoreBundle\Helper\Chart\LineChart;
-use Mautic\CoreBundle\Helper\CoreParametersHelper;
-use Mautic\CoreBundle\Helper\DateTimeHelper;
-use Mautic\CoreBundle\Helper\InputHelper;
-use Mautic\CoreBundle\Helper\IpLookupHelper;
-use Mautic\CoreBundle\Helper\UserHelper;
-use Mautic\CoreBundle\Model\FormModel as CommonFormModel;
-use Mautic\CoreBundle\Security\Permissions\CorePermissions;
-use Mautic\CoreBundle\Translation\Translator;
-use Mautic\CoreBundle\Twig\Helper\DateHelper;
-use Mautic\FormBundle\Crate\UploadFileCrate;
-use Mautic\FormBundle\Entity\Action;
-use Mautic\FormBundle\Entity\Field;
-use Mautic\FormBundle\Entity\Form;
-use Mautic\FormBundle\Entity\Submission;
-use Mautic\FormBundle\Entity\SubmissionRepository;
-use Mautic\FormBundle\Event\Service\FieldValueTransformer;
-use Mautic\FormBundle\Event\SubmissionEvent;
-use Mautic\FormBundle\Event\ValidationEvent;
-use Mautic\FormBundle\Exception\FileValidationException;
-use Mautic\FormBundle\Exception\NoFileGivenException;
-use Mautic\FormBundle\Exception\ValidationException;
+use Doctrine\ORM\EntityManager;
 use Mautic\FormBundle\FormEvents;
-use Mautic\FormBundle\Helper\FormFieldHelper;
-use Mautic\FormBundle\Helper\FormUploader;
-use Mautic\FormBundle\ProgressiveProfiling\DisplayManager;
-use Mautic\FormBundle\Validator\UploadFieldValidator;
-use Mautic\LeadBundle\DataObject\LeadManipulator;
-use Mautic\LeadBundle\Deduplicate\ContactMerger;
-use Mautic\LeadBundle\Deduplicate\Exception\SameContactException;
-use Mautic\LeadBundle\Entity\Company;
+use Mautic\FormBundle\Entity\Form;
 use Mautic\LeadBundle\Entity\Lead;
-use Mautic\LeadBundle\Field\FieldsWithUniqueIdentifier;
-use Mautic\LeadBundle\Helper\CustomFieldValueHelper;
-use Mautic\LeadBundle\Helper\IdentifyCompanyHelper;
-use Mautic\LeadBundle\Model\CompanyModel;
-use Mautic\LeadBundle\Model\FieldModel as LeadFieldModel;
+use Mautic\FormBundle\Entity\Field;
+use Mautic\FormBundle\Entity\Action;
+use Mautic\LeadBundle\Entity\Company;
 use Mautic\LeadBundle\Model\LeadModel;
-use Mautic\LeadBundle\Tracker\ContactTracker;
-use Mautic\LeadBundle\Tracker\Service\DeviceTrackingService\DeviceTrackingServiceInterface;
 use Mautic\PageBundle\Model\PageModel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Mautic\CoreBundle\Helper\UserHelper;
+use Mautic\FormBundle\Entity\Submission;
+use Mautic\CoreBundle\Helper\InputHelper;
+use Mautic\LeadBundle\Model\CompanyModel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Mautic\CampaignBundle\Entity\Campaign;
+use Mautic\FormBundle\Helper\FormUploader;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use Mautic\CoreBundle\Helper\DateTimeHelper;
+use Mautic\CoreBundle\Helper\IpLookupHelper;
+use Mautic\FormBundle\Crate\UploadFileCrate;
+use Mautic\FormBundle\Event\SubmissionEvent;
+use Mautic\FormBundle\Event\ValidationEvent;
+use Mautic\CoreBundle\Helper\Chart\LineChart;
+use Mautic\CoreBundle\Translation\Translator;
+use Mautic\CoreBundle\Twig\Helper\DateHelper;
+use Mautic\FormBundle\Helper\FormFieldHelper;
+use Mautic\LeadBundle\Tracker\ContactTracker;
 use Symfony\Component\HttpFoundation\Request;
+use Mautic\CampaignBundle\Model\CampaignModel;
+use Mautic\CoreBundle\Helper\Chart\ChartQuery;
 use Symfony\Component\HttpFoundation\Response;
+use Mautic\LeadBundle\Deduplicate\ContactMerger;
+use Mautic\LeadBundle\DataObject\LeadManipulator;
+use Mautic\CoreBundle\Helper\CoreParametersHelper;
+use Mautic\FormBundle\Entity\SubmissionRepository;
+use Mautic\LeadBundle\Helper\IdentifyCompanyHelper;
+use Mautic\CoreBundle\Exception\FileUploadException;
+use Mautic\FormBundle\Exception\ValidationException;
+use Mautic\LeadBundle\Helper\CustomFieldValueHelper;
+use Mautic\FormBundle\Exception\NoFileGivenException;
+use Mautic\FormBundle\Validator\UploadFieldValidator;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Mautic\CampaignBundle\Membership\MembershipManager;
+use Mautic\LeadBundle\Field\FieldsWithUniqueIdentifier;
+use Mautic\FormBundle\Exception\FileValidationException;
+use Mautic\CoreBundle\Doctrine\Paginator\SimplePaginator;
+use Mautic\CoreBundle\Model\FormModel as CommonFormModel;
+use Mautic\LeadBundle\Model\FieldModel as LeadFieldModel;
+use Mautic\FormBundle\Event\Service\FieldValueTransformer;
+use Mautic\FormBundle\ProgressiveProfiling\DisplayManager;
+use Mautic\CoreBundle\Security\Permissions\CorePermissions;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Twig\Environment;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Mautic\LeadBundle\Deduplicate\Exception\SameContactException;
+use Mautic\LeadBundle\Tracker\Service\DeviceTrackingService\DeviceTrackingServiceInterface;
 
 /**
  * @extends CommonFormModel<Submission>
@@ -405,6 +407,11 @@ class SubmissionModel extends CommonFormModel
         parent::deleteEntity($submission);
     }
 
+    /**
+     * @param array<string,mixed> $args
+     *
+     * @return Submission[]|array<int,Submission>|iterable<Submission>|\Doctrine\ORM\Internal\Hydration\IterableResult<Submission>|Paginator<Submission>|SimplePaginator<Submission>
+     */
     public function getEntities(array $args = [])
     {
         return $this->getRepository()->getEntities($args);

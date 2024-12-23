@@ -74,22 +74,16 @@ class DynamicContentFilterEntryFiltersTypeTest extends TestCase
                 ]
             );
 
-        $formModifier = function (FormEvent $event, $eventName) {};
-
         $builder->expects($this->exactly(2))
             ->method('addEventListener')
             ->withConsecutive(
                 [
                     FormEvents::PRE_SET_DATA,
-                    function (FormEvent $event) use ($formModifier) {
-                        $formModifier($event, FormEvents::PRE_SET_DATA);
-                    },
+                    $this->isInstanceOf(FormEvent::class),
                 ],
                 [
                     FormEvents::PRE_SUBMIT,
-                    function (FormEvent $event) use ($formModifier) {
-                        $formModifier($event, FormEvents::PRE_SUBMIT);
-                    },
+                    $this->isInstanceOf(FormEvent::class),
                 ]
             );
 

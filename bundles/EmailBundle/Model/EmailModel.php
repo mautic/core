@@ -261,8 +261,6 @@ class EmailModel extends FormModel implements AjaxLookupModelInterface
      * @param array       $options
      *
      * @return FormInterface<Email>
-     *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
     public function createForm($entity, FormFactoryInterface $formFactory, $action = null, $options = []): FormInterface
     {

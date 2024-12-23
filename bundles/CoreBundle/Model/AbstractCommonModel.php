@@ -2,18 +2,20 @@
 
 namespace Mautic\CoreBundle\Model;
 
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Intl\Locales;
 use Doctrine\ORM\EntityManagerInterface;
-use Mautic\CoreBundle\Entity\CommonRepository;
 use Mautic\CoreBundle\Entity\FormEntity;
+use Mautic\CoreBundle\Helper\UserHelper;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use Mautic\CoreBundle\Translation\Translator;
+use Mautic\CoreBundle\Entity\CommonRepository;
 use Mautic\CoreBundle\Helper\ClickthroughHelper;
 use Mautic\CoreBundle\Helper\CoreParametersHelper;
-use Mautic\CoreBundle\Helper\UserHelper;
+use Mautic\CoreBundle\Doctrine\Paginator\SimplePaginator;
 use Mautic\CoreBundle\Security\Permissions\CorePermissions;
-use Mautic\CoreBundle\Translation\Translator;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Intl\Locales;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @template T of object
@@ -101,7 +103,7 @@ abstract class AbstractCommonModel implements MauticModelInterface
     /**
      * Get a specific entity.
      *
-     * @param string|int|null $id
+     * @param string|int|null|mixed[] $id
      */
     public function getEntity($id = null): ?object
     {

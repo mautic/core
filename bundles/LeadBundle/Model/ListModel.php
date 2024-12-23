@@ -161,8 +161,6 @@ class ListModel extends FormModel
      * @param array       $options
      *
      * @return FormInterface<LeadList>
-     *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
     public function createForm($entity, FormFactoryInterface $formFactory, $action = null, $options = []): FormInterface
     {

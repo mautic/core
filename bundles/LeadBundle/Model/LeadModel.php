@@ -1148,13 +1148,14 @@ class LeadModel extends FormModel
     }
 
     /**
-     * @param array<string>    $fields
-     * @param array<mixed>     $data
-     * @param LeadList|mixed[] $list
-     * @param string[]         $tags
-     * @param ?int             $importId
+     * @param array<string>                $fields
+     * @param array<mixed>                 $data
+     * @param int|string|null              $owner
+     * @param LeadList|mixed[]|string|null $list
+     * @param string[]|string|null         $tags
+     * @param ?int                         $importId
      */
-    public function import(array $fields, array $data, ?int $owner = null, $list = null, $tags = null, bool $persist = true, ?LeadEventLog $eventLog = null, $importId = null, bool $skipIfExists = false): bool
+    public function import(array $fields, array $data, $owner = null, $list = null, $tags = null, bool $persist = true, ?LeadEventLog $eventLog = null, $importId = null, bool $skipIfExists = false): bool
     {
         $fields    = array_flip($fields);
         $fieldData = [];

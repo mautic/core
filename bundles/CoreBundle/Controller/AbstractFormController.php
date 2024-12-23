@@ -201,7 +201,6 @@ abstract class AbstractFormController extends CommonController
 
     protected function copyErrorsRecursively(FormInterface $copyFrom, FormInterface $copyTo)
     {
-        /** @var FormError $error */
         foreach ($copyFrom->getErrors() as $error) {
             $copyTo->addError($error);
         }
