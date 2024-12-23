@@ -115,9 +115,9 @@ class Import extends FormEntity
      */
     private $status;
 
-    private ?\DateTimeInterface $dateStarted;
+    private ?\DateTimeInterface $dateStarted = null;
 
-    private ?\DateTimeInterface $dateEnded;
+    private ?\DateTimeInterface $dateEnded = null;
 
     private string $object = 'lead';
 

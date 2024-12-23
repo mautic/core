@@ -19,7 +19,7 @@ class Stat
 
     public const TABLE_NAME = 'email_stats';
 
-    private ?string $id;
+    private ?string $id = null;
 
     /**
      * @var Email|null

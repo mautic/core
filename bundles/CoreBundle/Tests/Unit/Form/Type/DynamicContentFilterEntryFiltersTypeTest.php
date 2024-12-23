@@ -79,11 +79,15 @@ class DynamicContentFilterEntryFiltersTypeTest extends TestCase
             ->withConsecutive(
                 [
                     FormEvents::PRE_SET_DATA,
-                    $this->isInstanceOf(FormEvent::class),
+                    function ($event) {
+                        self::assertInstanceOf(FormEvent::class, $event);
+                    },
                 ],
                 [
                     FormEvents::PRE_SUBMIT,
-                    $this->isInstanceOf(FormEvent::class),
+                    function ($event) {
+                        self::assertInstanceOf(FormEvent::class, $event);
+                    },
                 ]
             );
 

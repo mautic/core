@@ -43,7 +43,7 @@ class ReportGenerator
     }
 
     /**
-     * @param array  $options Parameters set by the caller
+     * @param array $options Parameters set by the caller
      *
      * @return \Symfony\Component\Form\FormInterface<Report>
      */

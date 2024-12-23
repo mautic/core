@@ -53,6 +53,7 @@ class DateTimeHelperTest extends \PHPUnit\Framework\TestCase
 
     public function testvalidateMysqlDateTimeUnitWillNotThrowExceptionOnExpectedUnit(): void
     {
+        $this->expectNotToPerformAssertions();
         DateTimeHelper::validateMysqlDateTimeUnit('s');
         DateTimeHelper::validateMysqlDateTimeUnit('i');
         DateTimeHelper::validateMysqlDateTimeUnit('H');
