@@ -101,18 +101,18 @@
                             {{ 'mautic.campaign.stats'|trans }}
                         </a>
                     </li>
+                    {%  if isEmailCampaign|default(false) %}
+                        <li>
+                            <a href="#campaign-email-stats" role="tab" data-toggle="tab" data-load="campaign-email-stats">
+                                {{ 'mautic.campaign.email_stats'|trans }}
+                            </a>
+                        </li>
+                    {% endif %}
                     <li>
                         <a href="#reads-map-container" role="tab" data-toggle="tab" data-load="map">
                             {{ 'mautic.email.thead.maps'|trans }}
                         </a>
                     </li>
-                    {%  if isEmailCampaign|default(false) %}
-                    <li>
-                        <a href="#emails-container" role="tab" data-toggle="tab" data-load="email-trend">
-                            {{ 'mautic.campaign.metrics'|trans }}
-                        </a>
-                    </li>
-                    {% endif %}
                 </ul>
                 <!--/ tabs controls -->
                 <div class="date-range">
@@ -140,9 +140,30 @@
                     </div>
                 </div>
                 {% if isEmailCampaign|default(false) %}
-                <div class="tab-pane bdr-w-0" id="emails-container"
-                     data-graph-url="{{ path('mautic_email_opening_trend', {'objectId' : campaign.id, 'dateFrom' : dateFrom|date('Y-m-d'), 'dateTo' : dateTo|date('Y-m-d'), 'ids' : []}) }}"
-                ></div>
+                <div class="tab-pane bdr-w-0" id="campaign-email-stats">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4 class="text-muted ml-20 mb-md">{{ 'mautic.campaign.email_stats.weekday' | trans }}</h4>
+                            <div data-campaign-email-stats-weekdays="{{ path('mautic_campaign_metrics_email_weekdays', {'objectId' : campaign.id, 'dateFrom' : dateFrom|date('Y-m-d'), 'dateTo' : dateTo|date('Y-m-d')}) }}">
+                                <div class="d-flex jc-center ai-center">
+                                    <div class="spinner fs-42">
+                                        <i class="ri-loader-3-line ri-spin"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h4 class="text-muted ml-20 mb-md">{{ 'mautic.campaign.email_stats.hour' | trans }}</h4>
+                            <div data-campaign-email-stats-hours="{{ path('mautic_campaign_metrics_email_hours', {'objectId' : campaign.id, 'dateFrom' : dateFrom|date('Y-m-d'), 'dateTo' : dateTo|date('Y-m-d')}) }}">
+                                <div class="d-flex jc-center ai-center">
+                                    <div class="spinner fs-42">
+                                        <i class="ri-loader-3-line ri-spin"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 {% endif %}
             </div>
             <!--/ stats -->

@@ -31,9 +31,13 @@ return [
                 'path'       => '/campaign-map-stats/{objectId}/{dateFrom}/{dateTo}',
                 'controller' => 'Mautic\CampaignBundle\Controller\CampaignMapStatsController::viewAction',
             ],
-            'mautic_email_opening_trend' => [
-                'path'       => '/campaign-email-opening-trend/{objectId}/{dateFrom}/{dateTo}',
-                'controller' => 'Mautic\CampaignBundle\Controller\AjaxController::openingTrendAction',
+            'mautic_campaign_metrics_email_weekdays' => [
+                'path'       => '/campaign/metrics/email-weekdays/{objectId}/{dateFrom}/{dateTo}',
+                'controller' => 'Mautic\CampaignBundle\Controller\CampaignMetricsController::emailWeekdaysAction',
+            ],
+            'mautic_campaign_metrics_email_hours' => [
+                'path'       => '/campaign/metrics/email-hours/{objectId}/{dateFrom}/{dateTo}',
+                'controller' => 'Mautic\CampaignBundle\Controller\CampaignMetricsController::emailHoursAction',
             ],
         ],
         'api'  => [

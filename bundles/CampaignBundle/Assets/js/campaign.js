@@ -134,17 +134,31 @@ Mautic.campaignOnLoad = function (container, response) {
             Mautic.processBuilderErrors(response);
         }
 
-        const emailTrendChart = mQuery(container).find('[data-load="email-trend"]').first();
-        if(emailTrendChart.length) {
-            mQuery(emailTrendChart).on('click', () => {
-                const $emailsContainer = mQuery('#emails-container');
-                mQuery.ajax({
-                    url: $emailsContainer.data('graph-url'),
-                    success: function (response) {
-                        $emailsContainer.html(response);
-                        Mautic.renderCharts($emailsContainer);
-                    }
-                });
+        const campaignEmailStats = mQuery(container).find('[data-load="campaign-email-stats"]').first();
+        if(campaignEmailStats.length) {
+            mQuery(campaignEmailStats).on('click', () => {
+                const $campaignWeekdaysContainer = mQuery('[data-campaign-email-stats-weekdays]');
+                const $campaignHoursContainer = mQuery('[data-campaign-email-stats-hours]');
+
+                if ($campaignWeekdaysContainer.find('canvas').length === 0) {
+                    mQuery.ajax({
+                        url: $campaignWeekdaysContainer.data('campaign-email-stats-weekdays'),
+                        success: function (response) {
+                            $campaignWeekdaysContainer.html(response);
+                            Mautic.renderCharts($campaignWeekdaysContainer);
+                        }
+                    });
+                }
+
+                if ($campaignHoursContainer.find('canvas').length === 0) {
+                    mQuery.ajax({
+                        url: $campaignHoursContainer.data('campaign-email-stats-hours'),
+                        success: function (response) {
+                            $campaignHoursContainer.html(response);
+                            Mautic.renderCharts($campaignHoursContainer);
+                        }
+                    });
+                }
             });
         }
 

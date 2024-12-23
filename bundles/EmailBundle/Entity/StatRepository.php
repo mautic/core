@@ -832,7 +832,7 @@ class StatRepository extends CommonRepository
      *
      * @throws \Exception
      */
-    public function getEmailDayStats(array $eventsIds, \DateTimeImmutable $dateFrom, \DateTimeImmutable $dateTo, string $timezoneOffset): array
+    public function emailMetricsPerWeekdayByCampaignEvents(array $eventsIds, \DateTimeImmutable $dateFrom, \DateTimeImmutable $dateTo, string $timezoneOffset): array
     {
         $queryBuilder        = $this->getEntityManager()->getConnection()->createQueryBuilder();
         $subQueryDaysBuilder = $this->getEntityManager()->getConnection()->createQueryBuilder();
@@ -947,7 +947,7 @@ class StatRepository extends CommonRepository
      *
      * @throws \Exception
      */
-    public function getEmailTimeStats(array $eventsIds, \DateTimeImmutable $dateFrom, \DateTimeImmutable $dateTo, string $timezoneOffset): array
+    public function emailMetricsPerHourByCampaignEvents(array $eventsIds, \DateTimeImmutable $dateFrom, \DateTimeImmutable $dateTo, string $timezoneOffset): array
     {
         $queryBuilder         = $this->getEntityManager()->getConnection()->createQueryBuilder();
         $subQueryHoursBuilder = $this->getEntityManager()->getConnection()->createQueryBuilder();
