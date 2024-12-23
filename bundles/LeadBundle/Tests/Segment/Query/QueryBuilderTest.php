@@ -6,14 +6,15 @@ declare(strict_types=1);
 
 namespace Mautic\LeadBundle\Tests\Segment\Query;
 
-use Doctrine\DBAL\ArrayParameterType;
+use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Platforms\MySQLPlatform;
-use Mautic\LeadBundle\Segment\Query\Expression\ExpressionBuilder;
-use Mautic\LeadBundle\Segment\Query\QueryBuilder;
-use Mautic\LeadBundle\Segment\Query\QueryException;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
+use Doctrine\DBAL\ArrayParameterType;
+use Doctrine\DBAL\Platforms\MySQLPlatform;
+use Mautic\LeadBundle\Segment\Query\QueryBuilder;
+use Mautic\LeadBundle\Segment\Query\QueryException;
+use Mautic\LeadBundle\Segment\Query\Expression\ExpressionBuilder;
 
 class QueryBuilderTest extends TestCase
 {
@@ -502,12 +503,7 @@ class QueryBuilderTest extends TestCase
 
     private function createConnectionFake(): Connection
     {
-        return new class extends Connection {
-            /** @noinspection PhpMissingParentConstructorInspection */
-            public function __construct()
-            {
-            }
-
+        return new class([], $this->createMock(Driver::class)) extends Connection {
             public function getDatabasePlatform()
             {
                 return new MySQLPlatform();

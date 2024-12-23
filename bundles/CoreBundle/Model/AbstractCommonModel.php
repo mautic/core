@@ -85,7 +85,7 @@ abstract class AbstractCommonModel implements MauticModelInterface
      *
      * @param array $args [start, limit, filter, orderBy, orderByDir]
      *
-     * @return \Doctrine\ORM\Tools\Pagination\Paginator|array
+     * @return object[]|array<int,mixed>|iterable<object>|\Doctrine\ORM\Internal\Hydration\IterableResult<object>|Paginator<object>|SimplePaginator<mixed>
      */
     public function getEntities(array $args = [])
     {
@@ -100,6 +100,8 @@ abstract class AbstractCommonModel implements MauticModelInterface
 
     /**
      * Get a specific entity.
+     *
+     * @param string|int|null $id
      */
     public function getEntity($id = null): ?object
     {

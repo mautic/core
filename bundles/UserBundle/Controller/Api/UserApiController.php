@@ -177,7 +177,7 @@ class UserApiController extends CommonApiController
      * @return Response
      *
      * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
     public function isGrantedAction(Request $request, $id)
     {

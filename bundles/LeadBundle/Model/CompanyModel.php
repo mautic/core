@@ -780,13 +780,11 @@ class CompanyModel extends CommonFormModel implements AjaxLookupModelInterface
     }
 
     /**
-     * @param mixed[] $fields
-     * @param mixed[] $data
-     * @param bool    $skipIfExists
-     *
-     * @throws \Exception
+     * @param array<string> $fields
+     * @param array<mixed>  $data
+     * @param ?int          $owner
      */
-    public function import($fields, $data, $owner = null, $skipIfExists = false): bool
+    public function import(array $fields, array $data, $owner = null, bool $skipIfExists = false): bool
     {
         $company = $this->importCompany($fields, $data, $owner, false, $skipIfExists);
 
