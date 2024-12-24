@@ -93,11 +93,10 @@ class EmailPeriodMetrics
                 'WEEKDAY(TIMESTAMPADD(SECOND, :timezoneOffset, ph.date_hit)) AS hit_day',
                 'COUNT(DISTINCT ph.id) AS hit_count'
             )
-            ->from(MAUTIC_TABLE_PREFIX.'page_hits', 'ph')
-            ->join('ph', MAUTIC_TABLE_PREFIX.'channel_url_trackables', 'cut', 'cut.redirect_id = ph.redirect_id')
-            ->join('cut', MAUTIC_TABLE_PREFIX.'email_stats', 'es', 'cut.channel_id = es.email_id')
-            ->where('ph.date_hit IS NOT NULL')
-            ->andWhere('ph.date_hit BETWEEN :dateFrom AND :dateTo')
+            ->from(MAUTIC_TABLE_PREFIX.'email_stats', 'es')
+            ->join('es', MAUTIC_TABLE_PREFIX.'page_hits', 'ph', 'es.lead_id = ph.lead_id')
+            ->join('es', MAUTIC_TABLE_PREFIX.'channel_url_trackables', 'cut', 'cut.channel_id = es.email_id AND cut.redirect_id = ph.redirect_id')
+            ->where('ph.date_hit BETWEEN :dateFrom AND :dateTo')
             ->andWhere('ph.source = :email_source')
             ->andWhere('cut.channel = :email_source')
             ->andWhere('es.source = :campaign_event_source')
@@ -123,11 +122,10 @@ class EmailPeriodMetrics
                 'TIME_FORMAT(TIMESTAMPADD(SECOND, :timezoneOffset, ph.date_hit), :format) AS hit_hour',
                 'COUNT(DISTINCT ph.id) AS hit_count'
             )
-            ->from(MAUTIC_TABLE_PREFIX.'page_hits', 'ph')
-            ->join('ph', MAUTIC_TABLE_PREFIX.'channel_url_trackables', 'cut', 'cut.redirect_id = ph.redirect_id')
-            ->join('cut', MAUTIC_TABLE_PREFIX.'email_stats', 'es', 'cut.channel_id = es.email_id')
-            ->where('ph.date_hit IS NOT NULL')
-            ->andWhere('ph.date_hit BETWEEN :dateFrom AND :dateTo')
+            ->from(MAUTIC_TABLE_PREFIX.'email_stats', 'es')
+            ->join('es', MAUTIC_TABLE_PREFIX.'page_hits', 'ph', 'es.lead_id = ph.lead_id')
+            ->join('es', MAUTIC_TABLE_PREFIX.'channel_url_trackables', 'cut', 'cut.channel_id = es.email_id AND cut.redirect_id = ph.redirect_id')
+            ->where('ph.date_hit BETWEEN :dateFrom AND :dateTo')
             ->andWhere('ph.source = :email_source')
             ->andWhere('cut.channel = :email_source')
             ->andWhere('es.source = :campaign_event_source')
