@@ -19,6 +19,9 @@ final class EmailFixturesHelper
     {
     }
 
+    /**
+     * @param array<int, mixed> $segments
+     */
     public function createEmail(
         string $name = 'Test email',
         string $subject = 'Test subject',

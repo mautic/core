@@ -23,7 +23,10 @@ class CampaignMetricsControllerFunctionalTest extends MauticMysqlTestCase
         $this->emailFixturesHelper    = new EmailFixturesHelper($this->em);
     }
 
-    private function setupTestData(): array
+    /**
+     * @return array<string, mixed>
+     */
+    private function setupEmailCampaignTestData(): array
     {
         $contacts = [
             $this->campaignFixturesHelper->createContact('john@example.com'),
@@ -65,15 +68,15 @@ class CampaignMetricsControllerFunctionalTest extends MauticMysqlTestCase
 
     public function testEmailWeekdaysAction(): void
     {
-        $testData = $this->setupTestData();
+        $testData = $this->setupEmailCampaignTestData();
         $campaign = $testData['campaign'];
 
         $this->client->request(Request::METHOD_GET, "/s/campaign/metrics/email-weekdays/{$campaign->getId()}/2024-12-01/2024-12-12");
         Assert::assertTrue($this->client->getResponse()->isOk());
-        $content = $this->client->getResponse()->getContent();
-        $crawler   = new Crawler($content);
-        $daysJson  = $crawler->filter('canvas')->text(null, false);
-        $daysData  = json_decode(html_entity_decode($daysJson), true);
+        $content      = $this->client->getResponse()->getContent();
+        $crawler      = new Crawler($content);
+        $daysJson     = $crawler->filter('canvas')->text(null, false);
+        $daysData     = json_decode(html_entity_decode($daysJson), true);
         $daysDatasets = $daysData['datasets'];
         Assert::assertIsArray($daysDatasets);
         Assert::assertCount(3, $daysDatasets);  // Assuming there are 3 datasets: Email sent, Email read, Email clicked
@@ -93,12 +96,12 @@ class CampaignMetricsControllerFunctionalTest extends MauticMysqlTestCase
 
     public function testEmailHoursAction(): void
     {
-        $testData = $this->setupTestData();
+        $testData = $this->setupEmailCampaignTestData();
         $campaign = $testData['campaign'];
 
         $this->client->request(Request::METHOD_GET, "/s/campaign/metrics/email-hours/{$campaign->getId()}/2024-12-01/2024-12-12");
         Assert::assertTrue($this->client->getResponse()->isOk());
-        $content = $this->client->getResponse()->getContent();
+        $content   = $this->client->getResponse()->getContent();
         $crawler   = new Crawler($content);
         $hourJson  = $crawler->filter('canvas')->text(null, false);
         $hoursData = json_decode(html_entity_decode($hourJson), true);
@@ -114,9 +117,9 @@ class CampaignMetricsControllerFunctionalTest extends MauticMysqlTestCase
         // Generate expected hour labels based on the actual time format
         $expectedHoursLabels = [];
         for ($hour = 0; $hour < 24; ++$hour) {
-            $startTime = (new \DateTime())->setTime($hour, 0);
-            $endTime = (new \DateTime())->setTime(($hour + 1) % 24, 0);
-            $expectedHoursLabels[] = $startTime->format($timeFormat) . ' - ' . $endTime->format($timeFormat);
+            $startTime             = (new \DateTime())->setTime($hour, 0);
+            $endTime               = (new \DateTime())->setTime(($hour + 1) % 24, 0);
+            $expectedHoursLabels[] = $startTime->format($timeFormat).' - '.$endTime->format($timeFormat);
         }
 
         Assert::assertEquals($expectedHoursLabels, $hoursData['labels']);

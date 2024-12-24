@@ -8,21 +8,17 @@ use Mautic\CampaignBundle\Entity\LeadEventLog;
 use Mautic\CampaignBundle\Entity\LeadEventLogRepository;
 use Mautic\CampaignBundle\Tests\Functional\Fixtures\FixtureHelper;
 use Mautic\CoreBundle\Test\MauticMysqlTestCase;
-use Mautic\EmailBundle\Tests\Functional\Fixtures\EmailFixturesHelper;
 use PHPUnit\Framework\Assert;
-use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\Request;
 
 class AjaxControllerFunctionalTest extends MauticMysqlTestCase
 {
     private FixtureHelper $campaignFixturesHelper;
-    private EmailFixturesHelper $emailFixturesHelper;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->campaignFixturesHelper = new FixtureHelper($this->em);
-        $this->emailFixturesHelper    = new EmailFixturesHelper($this->em);
     }
 
     public function testCancelScheduledCampaignEventAction(): void

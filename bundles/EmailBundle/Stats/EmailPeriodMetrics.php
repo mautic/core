@@ -18,6 +18,8 @@ class EmailPeriodMetrics
     }
 
     /**
+     * @param array<int, int> $eventsIds
+     *
      * @return array<int, array<string, int|string>>
      *
      * @throws \Exception
@@ -50,6 +52,8 @@ class EmailPeriodMetrics
     }
 
     /**
+     * @param array<int, int> $eventsIds
+     *
      * @return array<int, array<string, int|string>>
      *
      * @throws \Exception

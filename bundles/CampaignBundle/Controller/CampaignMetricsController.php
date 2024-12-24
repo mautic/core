@@ -9,7 +9,7 @@ use Mautic\CoreBundle\Helper\Chart\BarChart;
 use Mautic\CoreBundle\Helper\CoreParametersHelper;
 use Mautic\CoreBundle\Helper\DateTimeHelper;
 use Mautic\CoreBundle\Translation\Translator;
-use Mautic\EmailBundle\Entity\StatRepository;
+use Mautic\EmailBundle\Stats\EmailPeriodMetrics;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -22,7 +22,7 @@ class CampaignMetricsController extends AbstractController
     }
 
     public function emailWeekdaysAction(
-        StatRepository $statRepository,
+        EmailPeriodMetrics $emailPeriodMetrics,
         CampaignModel $model,
         int $objectId,
         string $dateFrom = '',
@@ -35,7 +35,7 @@ class CampaignMetricsController extends AbstractController
 
         $dateTimeHelper        = new DateTimeHelper();
         $defaultTimezoneOffset = $dateTimeHelper->getLocalDateTime()->format('Z');
-        $stats                 = $statRepository->emailMetricsPerWeekdayByCampaignEvents($eventsIds, $dateFromObject, $dateToObject, $defaultTimezoneOffset);
+        $stats                 = $emailPeriodMetrics->emailMetricsPerWeekdayByCampaignEvents($eventsIds, $dateFromObject, $dateToObject, $defaultTimezoneOffset);
 
         $chart  = new BarChart([
             $this->translator->trans('mautic.core.date.monday'),
@@ -62,7 +62,7 @@ class CampaignMetricsController extends AbstractController
     }
 
     public function emailHoursAction(
-        StatRepository $statRepository,
+        EmailPeriodMetrics $emailPeriodMetrics,
         CampaignModel $model,
         int $objectId,
         string $dateFrom = '',
@@ -76,9 +76,9 @@ class CampaignMetricsController extends AbstractController
         $dateTimeHelper        = new DateTimeHelper();
         $defaultTimezoneOffset = $dateTimeHelper->getLocalDateTime()->format('Z');
 
-        $stats = $statRepository->emailMetricsPerHourByCampaignEvents($eventsIds, $dateFromObject, $dateToObject, $defaultTimezoneOffset);
+        $stats = $emailPeriodMetrics->emailMetricsPerHourByCampaignEvents($eventsIds, $dateFromObject, $dateToObject, $defaultTimezoneOffset);
 
-        $hoursRange = range(0, 23, 1);
+        $hoursRange = range(0, 23);
         $labels     = [];
 
         $timeFormat = $this->coreParametersHelper->get('date_format_timeonly');
