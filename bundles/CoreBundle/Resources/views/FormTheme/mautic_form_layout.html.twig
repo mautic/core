@@ -587,7 +587,6 @@ id="{{ id|escape }}" name="{{ full_name|escape }}"
                    value="{{ choice.value }}"
                    {% if value == choice.value %}checked{% endif %}
                    style="display: none;"
-                   aria-checked="{{ value == choice.value ? 'true' : 'false' }}"
                    {% for attrname, attrvalue in attr %}
                        {{ attrname }}="{{ attrvalue }}"
                    {% endfor %}>
