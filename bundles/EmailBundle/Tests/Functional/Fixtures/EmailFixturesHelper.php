@@ -29,7 +29,7 @@ final class EmailFixturesHelper
         bool $isPublished = true,
         string $template = 'blank',
         string $customHtml = 'Test Html',
-        array $segments = []
+        array $segments = [],
     ): Email {
         $email = (new Email())
             ->setName($name)

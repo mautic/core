@@ -17,7 +17,7 @@ class CampaignMetricsController extends AbstractController
 {
     public function __construct(
         private Translator $translator,
-        private CoreParametersHelper $coreParametersHelper
+        private CoreParametersHelper $coreParametersHelper,
     ) {
     }
 
