@@ -353,7 +353,7 @@ Mautic.switchFormFieldState = function (formName) {
         });
     };
 
-    var resetField = function (field) {
+    var toggleFieldOff = function (field) {
         // Set Yes/No toggle to No.
         if (field.attr('onchange')?.includes('Mautic.toggleYesNo(this)')
             && field.val() === "1"
@@ -396,7 +396,7 @@ Mautic.switchFormFieldState = function (formName) {
         if (show) {
             fieldContainer.fadeIn();
         } else {
-            resetField(field);
+            toggleFieldOff(field);
             fieldContainer.fadeOut();
         }
     });
@@ -410,7 +410,7 @@ Mautic.switchFormFieldState = function (formName) {
     mQuery.each(disabledFields, function(fieldId, disable) {
         var field = mQuery('#' + fieldId)
         if (disable) {
-            resetField(field);
+            toggleFieldOff(field);
             field.addClass('disabled', disable);
         } else {
             field.removeClass('disabled', disable);
