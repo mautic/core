@@ -541,16 +541,8 @@ Mautic.toggleYesNo = function(element) {
         $textEl = $toggle.find('.toggle__text'),
         isYes = $yesInput.is(':checked');
 
-    // Update both property and attribute
-    $yesInput
-        .prop('checked', !isYes)
-        .attr('checked', !isYes ? 'checked' : null)
-        .trigger('change');
-
-    $noInput
-        .prop('checked', isYes)
-        .attr('checked', isYes ? 'checked' : null);
-
+    $noInput.prop('checked', isYes);
+    $yesInput.prop('checked', !isYes).trigger('change');
     $switchEl.toggleClass('toggle__switch--checked', !isYes);
     $textEl.text($toggle.data(isYes ? 'no' : 'yes'));
     $label.attr('aria-checked', !isYes);
