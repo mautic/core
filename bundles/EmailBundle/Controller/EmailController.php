@@ -709,7 +709,6 @@ class EmailController extends FormController
             // Force type to template
             $entity->setEmailType('template');
         }
-        /** @var Form $form */
         $form = $model->createForm($entity, $this->formFactory, $action, ['update_select' => $updateSelect]);
 
         // /Check for a submitted form and process it
@@ -947,8 +946,7 @@ class EmailController extends FormController
 
         // Create the form
         $action = $this->generateUrl('mautic_email_action', ['objectAction' => 'clone', 'objectId' => $objectId]);
-        /** @var Form $form */
-        $form = $model->createForm($entity, $this->formFactory, $action);
+        $form   = $model->createForm($entity, $this->formFactory, $action);
 
         // /Check for a submitted form and process it
         if ('POST' === $method) {
