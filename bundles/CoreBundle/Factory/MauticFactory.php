@@ -8,7 +8,6 @@ use Mautic\CoreBundle\Exception\FileNotFoundException;
 use Mautic\CoreBundle\Helper\DateTimeHelper;
 use Mautic\CoreBundle\Helper\ThemeHelper;
 use Mautic\CoreBundle\Model\AbstractCommonModel;
-use Mautic\CoreBundle\Security\Permissions\CorePermissions;
 use Mautic\CoreBundle\Twig\Helper\AssetsHelper;
 use Mautic\CoreBundle\Twig\Helper\SlotsHelper;
 use Mautic\EmailBundle\Helper\MailHelper;
@@ -20,7 +19,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
  * @deprecated 2.0 to be removed in 3.0
@@ -33,8 +31,6 @@ class MauticFactory
     public function __construct(
         private ContainerInterface $container,
         private ModelFactory $modelFactory,
-        private CorePermissions $security,
-        private AuthorizationCheckerInterface $authorizationChecker,
         private RequestStack $requestStack,
         private ManagerRegistry $doctrine,
         private Mailbox $mailbox,
@@ -56,24 +52,6 @@ class MauticFactory
     public function getModel($modelNameKey): \Mautic\CoreBundle\Model\MauticModelInterface
     {
         return $this->modelFactory->getModel($modelNameKey);
-    }
-
-    /**
-     * Retrieves Mautic's security object.
-     *
-     * @return CorePermissions
-     */
-    public function getSecurity()
-    {
-        return $this->security;
-    }
-
-    /**
-     * Retrieves Symfony's security context.
-     */
-    public function getSecurityContext(): AuthorizationCheckerInterface
-    {
-        return $this->authorizationChecker;
     }
 
     /**
