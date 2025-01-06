@@ -99,25 +99,6 @@ mQuery( document ).ajaxStop(function(event) {
     Mautic.initializeCodeBlocks();
 });
 
-/**
- * Applies user interface preferences from localStorage to the HTML element.
- * Runs immediately to set attributes based on 'm-toggle-setting-' prefixed items.
- */
-(function() {
-    // Load user preferences for UI saved previously
-    const prefix = 'm-toggle-setting-';
-    Object.keys(localStorage)
-        .filter(key => key.startsWith(prefix))
-        .forEach(setting => {
-            const attributeName = setting.replace(prefix, '');
-            const value = localStorage.getItem(setting);
-
-            if (value) {
-                document.documentElement.setAttribute(attributeName, value);
-            }
-        });
-})();
-
 mQuery( document ).ready(function() {
     if (typeof mauticContent !== 'undefined') {
         mQuery("html").Core({
