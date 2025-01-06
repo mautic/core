@@ -63,8 +63,6 @@ class MailHelper
      */
     protected $transport;
 
-    protected ?EventDispatcherInterface $dispatcher = null;
-
     /**
      * @var bool|MauticMessage
      */
@@ -238,6 +236,7 @@ class MailHelper
         private Environment $twig,
         private ThemeHelper $themeHelper,
         private SlotsHelper $slotsHelper,
+        private EventDispatcherInterface $dispatcher,
     ) {
         $this->transport  = $this->getTransport();
         $this->returnPath = $coreParametersHelper->get('mailer_return_path');
@@ -1449,10 +1448,6 @@ class MailHelper
      */
     public function dispatchSendEvent(): void
     {
-        if (null == $this->dispatcher) {
-            $this->dispatcher = $this->factory->getDispatcher();
-        }
-
         if (null === $this->bodyInitial) {
             $this->bodyInitial = $this->body;
         }
@@ -2125,14 +2120,6 @@ class MailHelper
 
     public function dispatchPreSendEvent(): void
     {
-        if (null === $this->dispatcher) {
-            $this->dispatcher = $this->factory->getDispatcher();
-        }
-
-        if (empty($this->dispatcher)) {
-            return;
-        }
-
         $event = new EmailSendEvent($this);
         $this->dispatcher->dispatch($event, EmailEvents::EMAIL_PRE_SEND);
 

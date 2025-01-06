@@ -10,7 +10,6 @@ use Mautic\CoreBundle\Model\AbstractCommonModel;
 use Mautic\EmailBundle\Helper\MailHelper;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -64,11 +63,6 @@ class MauticFactory
     public function getDatabase()
     {
         return $this->doctrine->getConnection();
-    }
-
-    public function getDispatcher(): ?EventDispatcherInterface
-    {
-        return $this->container->get('event_dispatcher');
     }
 
     /**
