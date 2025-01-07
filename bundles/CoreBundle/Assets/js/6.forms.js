@@ -276,13 +276,13 @@ Mautic.initializeFormFieldStateSwitcher = function (formName)
  * Possible state: visible, disabled
  */
 Mautic.switchFormFieldState = function (formName) {
-    var form = mQuery('form[name="' + formName + '"]');
+    var form   = mQuery('form[name="'+formName+'"]');
     var visibleFields = {};
     var disabledFields = {};
     var fieldsPriority = {};
 
     var getFieldParts = function(fieldName) {
-        var returnObject = { "name": fieldName, "attribute": '' };
+        var returnObject = {"name": fieldName, "attribute": ''};
         if (fieldName.search(':') !== -1) {
             var returnArray = fieldName.split(':');
             returnObject.name = returnArray[0];
@@ -296,9 +296,9 @@ Mautic.switchFormFieldState = function (formName) {
         var state = true;
         if (typeof condition == 'object') {
             state = mQuery.inArray(sourceFieldVal, condition) !== -1;
-        } else if (condition == 'empty' || condition == 'notEmpty') {
-            var isEmpty = (sourceFieldVal === '' || sourceFieldVal === null || sourceFieldVal === 'undefined');
-            state = (condition === 'empty') ? isEmpty : !isEmpty;
+        } else if (condition == 'empty' || (condition == 'notEmpty')) {
+            var isEmpty = (sourceFieldVal == '' || sourceFieldVal == null || sourceFieldVal == 'undefined');
+            state = (condition == 'empty') ? isEmpty : !isEmpty;
         } else if (condition !== sourceFieldVal) {
             state = false;
         }
@@ -315,7 +315,7 @@ Mautic.switchFormFieldState = function (formName) {
                 var field = '#' + fieldId;
             } else if (mQuery('#' + fieldId).is('select')) {
                 // Check the value option
-                var field = mQuery('#' + fieldId + ' option[value="' + mQuery('#' + fieldId).val() + '"]');
+                var field = mQuery('#' + fieldId +' option[value="' + mQuery('#' + fieldId).val() + '"]');
             } else {
                 return state;
             }
@@ -324,7 +324,7 @@ Mautic.switchFormFieldState = function (formName) {
 
             return checkValueCondition(attributeValue, condition);
         } else if (mQuery('#' + fieldId).is(':checkbox') || mQuery('#' + fieldId).is(':radio')) {
-            return (condition === 'checked' && mQuery('#' + fieldId).is(':checked')) || (condition === 'notChecked' && !mQuery('#' + fieldId).is(':checked'));
+            return (condition == 'checked' && mQuery('#' + fieldId).is(':checked')) || (condition == '' && !mQuery('#' + fieldId).is(':checked'));
         }
 
         return checkValueCondition(mQuery('#' + fieldId).val(), condition);
@@ -359,19 +359,19 @@ Mautic.switchFormFieldState = function (formName) {
             && field.val() === "1"
             && field.is(':checked')
         ) {
-            var label = field.siblings('.toggle__label');
-            if (field.is(':checked')) {
+            label = field.siblings('.toggle__label')
+            if (label.attr('aria-checked') === "true") {
                 label.trigger('click');
             }
         }
     }
 
-    // Find all fields to show
+    // find all fields to show
     processConditions('data-show-on', visibleFields, false);
 
-    // Find all fields to hide
+    // find all fields to hide
     form.find('[data-hide-on]').each(function(index, el) {
-        var field = mQuery(el);
+        var field  = mQuery(el);
         var hideOn = JSON.parse(field.attr('data-hide-on'));
 
         if (typeof hideOn.display_priority !== 'undefined') {
@@ -389,7 +389,7 @@ Mautic.switchFormFieldState = function (formName) {
         });
     });
 
-    // Show/hide according to conditions
+    // show/hide according to conditions
     mQuery.each(visibleFields, function(fieldId, show) {
         var field = mQuery('#' + fieldId);
         var fieldContainer = field.closest('[class*="col-"]');
@@ -401,14 +401,14 @@ Mautic.switchFormFieldState = function (formName) {
         }
     });
 
-    // Find all fields to enable
+    // find all fields to enable
     processConditions('data-enable-on', disabledFields, true);
-    // Find all fields to disable
+    // find all fields to disable
     processConditions('data-disable-on', disabledFields, false);
 
-    // Disable according to conditions
+    // disable according to conditions
     mQuery.each(disabledFields, function(fieldId, disable) {
-        var field = mQuery('#' + fieldId);
+        var field = mQuery('#' + fieldId)
         if (disable) {
             resetField(field);
             field.addClass('disabled', disable);
@@ -541,28 +541,15 @@ Mautic.toggleYesNo = function(element) {
         $textEl = $toggle.find('.toggle__text'),
         isYes = $yesInput.is(':checked');
 
-    if (isYes) {
-        // Switch to 'No'
-        $yesInput
-            .prop('checked', false)
-            .removeAttr('checked')
-            .trigger('change');
+    // Update both property and attribute
+    $yesInput
+        .prop('checked', !isYes)
+        .attr('checked', !isYes ? 'checked' : null)
+        .trigger('change');
 
-        $noInput
-            .prop('checked', true)
-            .attr('checked', 'checked')
-            .trigger('change');
-    } else {
-        // Switch to 'Yes'
-        $yesInput
-            .prop('checked', true)
-            .attr('checked', 'checked')
-            .trigger('change');
-
-        $noInput
-            .prop('checked', false)
-            .removeAttr('checked');
-    }
+    $noInput
+        .prop('checked', isYes)
+        .attr('checked', isYes ? 'checked' : null);
 
     $switchEl.toggleClass('toggle__switch--checked', !isYes);
     $textEl.text($toggle.data(isYes ? 'no' : 'yes'));
