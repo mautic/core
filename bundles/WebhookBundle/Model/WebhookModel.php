@@ -117,7 +117,7 @@ class WebhookModel extends FormModel
     /**
      * Timestamp when the webhook processing starts.
      */
-    private string|float|null $startTime = null;
+    private ?float $startTime = null;
 
     public function __construct(
         CoreParametersHelper $coreParametersHelper,
@@ -129,7 +129,7 @@ class WebhookModel extends FormModel
         UrlGeneratorInterface $router,
         Translator $translator,
         UserHelper $userHelper,
-        LoggerInterface $mauticLogger
+        LoggerInterface $mauticLogger,
     ) {
         $this->setConfigProps($coreParametersHelper);
 

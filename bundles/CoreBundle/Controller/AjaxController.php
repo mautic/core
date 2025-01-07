@@ -63,7 +63,7 @@ class AjaxController extends CommonController
      */
     public function delegateAjaxAction(
         Request $request,
-        AuthorizationCheckerInterface $authorizationChecker
+        AuthorizationCheckerInterface $authorizationChecker,
     ) {
         // process ajax actions
         $action     = $request->get('action');
@@ -121,7 +121,7 @@ class AjaxController extends CommonController
     public function executeAjaxAction(
         Request $request,
         $action,
-        $bundle = null
+        $bundle = null,
     ) {
         if (method_exists($this, $action.'Action')) {
             return $this->forwardWithPost(
@@ -325,7 +325,7 @@ class AjaxController extends CommonController
 
         if (method_exists($entity, 'getCheckedOutBy')) {
             $checkedOut = $entity->getCheckedOutBy();
-            if (null !== $entity && !empty($checkedOut) && $checkedOut === $currentUser->getId()) {
+            if (!empty($checkedOut) && $checkedOut === $currentUser->getId()) {
                 // entity exists, is checked out, and is checked out by the current user so go ahead and unlock
                 \assert($model instanceof FormModel);
                 $model->unlockEntity($entity, $extra);
@@ -495,7 +495,7 @@ class AjaxController extends CommonController
         PathsHelper $pathsHelper,
         LanguageHelper $languageHelper,
         CookieHelper $cookieHelper,
-        LoggerInterface $mauticLogger
+        LoggerInterface $mauticLogger,
     ): JsonResponse {
         $dataArray  = ['success' => 0];
         $translator = $this->translator;

@@ -4,9 +4,11 @@ namespace Mautic\FormBundle\Model;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Mautic\CampaignBundle\Entity\Campaign;
 use Mautic\CampaignBundle\Membership\MembershipManager;
 use Mautic\CampaignBundle\Model\CampaignModel;
+use Mautic\CoreBundle\Doctrine\Paginator\SimplePaginator;
 use Mautic\CoreBundle\Exception\FileUploadException;
 use Mautic\CoreBundle\Helper\Chart\ChartQuery;
 use Mautic\CoreBundle\Helper\Chart\LineChart;
@@ -91,7 +93,7 @@ class SubmissionModel extends CommonFormModel
         Translator $translator,
         UserHelper $userHelper,
         LoggerInterface $mauticLogger,
-        CoreParametersHelper $coreParametersHelper
+        CoreParametersHelper $coreParametersHelper,
     ) {
         parent::__construct($em, $security, $dispatcher, $router, $translator, $userHelper, $mauticLogger, $coreParametersHelper);
     }
@@ -405,6 +407,11 @@ class SubmissionModel extends CommonFormModel
         parent::deleteEntity($submission);
     }
 
+    /**
+     * @param array<string,mixed> $args
+     *
+     * @return Submission[]|array<int,Submission>|iterable<Submission>|\Doctrine\ORM\Internal\Hydration\IterableResult<Submission>|Paginator<Submission>|SimplePaginator<Submission>
+     */
     public function getEntities(array $args = [])
     {
         return $this->getRepository()->getEntities($args);
@@ -762,7 +769,7 @@ class SubmissionModel extends CommonFormModel
         \DateTime $dateTo,
         $dateFormat = null,
         $filter = [],
-        $canViewOthers = true
+        $canViewOthers = true,
     ): array {
         $chart = new LineChart($unit, $dateFrom, $dateTo, $dateFormat);
         $query = new ChartQuery($this->em->getConnection(), $dateFrom, $dateTo);
@@ -788,10 +795,8 @@ class SubmissionModel extends CommonFormModel
      * @param string $dateTo
      * @param array  $filters
      * @param bool   $canViewOthers
-     *
-     * @return array
      */
-    public function getTopSubmissionReferrers($limit = 10, $dateFrom = null, $dateTo = null, $filters = [], $canViewOthers = true)
+    public function getTopSubmissionReferrers($limit = 10, $dateFrom = null, $dateTo = null, $filters = [], $canViewOthers = true): array
     {
         $q = $this->em->getConnection()->createQueryBuilder();
         $q->select('COUNT(DISTINCT t.id) AS submissions, t.referer')
@@ -821,10 +826,8 @@ class SubmissionModel extends CommonFormModel
      * @param string $dateTo
      * @param array  $filters
      * @param bool   $canViewOthers
-     *
-     * @return array
      */
-    public function getTopSubmitters($limit = 10, $dateFrom = null, $dateTo = null, $filters = [], $canViewOthers = true)
+    public function getTopSubmitters($limit = 10, $dateFrom = null, $dateTo = null, $filters = [], $canViewOthers = true): array
     {
         $q = $this->em->getConnection()->createQueryBuilder();
         $q->select('COUNT(DISTINCT t.id) AS submissions, t.lead_id, l.firstname, l.lastname, l.email')
@@ -957,7 +960,7 @@ class SubmissionModel extends CommonFormModel
         $this->logger->debug('FORM: Unique fields submitted include '.implode(', ', $uniqueFieldsWithData));
 
         // Check for duplicate lead
-        /** @var \Mautic\LeadBundle\Entity\Lead[] $leads */
+        /** @var Lead[] $leads */
         $leads = (!empty($uniqueFieldsWithData)) ? $this->em->getRepository(Lead::class)->getLeadsByUniqueFields(
             $uniqueFieldsWithData,
             $leadId

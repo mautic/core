@@ -64,7 +64,7 @@ class TrackableModel extends AbstractCommonModel
         Translator $translator,
         UserHelper $userHelper,
         LoggerInterface $mauticLogger,
-        CoreParametersHelper $coreParametersHelper
+        CoreParametersHelper $coreParametersHelper,
     ) {
         parent::__construct($em, $security, $dispatcher, $router, $translator, $userHelper, $mauticLogger, $coreParametersHelper);
     }
@@ -789,7 +789,7 @@ class TrackableModel extends AbstractCommonModel
     }
 
     /**
-     * @param array<int, Redirect|Trackable> $trackableTokens
+     * @param array<int|string, Redirect|Trackable> $trackableTokens
      *
      * @return string
      */

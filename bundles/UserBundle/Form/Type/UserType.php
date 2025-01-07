@@ -33,7 +33,7 @@ class UserType extends AbstractType
     public function __construct(
         private TranslatorInterface $translator,
         private UserModel $model,
-        private LanguageHelper $languageHelper
+        private LanguageHelper $languageHelper,
     ) {
     }
 
@@ -173,6 +173,14 @@ class UserType extends AbstractType
                 ],
                 'multiple'    => false,
                 'placeholder' => 'mautic.user.user.form.defaultlocale',
+            ]
+        );
+
+        $builder->add(
+            'preferences',
+            UserPreferencesType::class,
+            [
+                'label'      => false,
             ]
         );
 
