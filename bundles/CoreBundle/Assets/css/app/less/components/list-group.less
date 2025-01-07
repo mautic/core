@@ -27,10 +27,11 @@
 
     &.active {
       background-color: var(--layer-selected-inverse);
-      .list-group-item-heading { color: var(--text-inverse); }
+
+      .list-group-item-text, .list-group-item-heading { color: var(--text-inverse); }
     }
 
-    > a, > label, .list-group-item-heading {
+    > a, > label, .list-group-item-text {
       padding: 10px 15px;
       .outline();
     }
@@ -87,6 +88,10 @@
     > a, > label, .list-group-item-heading {
       color: @list-group-link-hover-color;
     }
+  }
+
+  &.active {
+    .list-group-item-heading, i { color: var(--text-primary); }
   }
 }
 
