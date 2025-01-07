@@ -369,6 +369,7 @@ return [
         'campaign_use_summary'                                                                  => 0,
         'campaign_by_range'                                                                     => 0,
         'delete_campaign_event_log_in_background'                                               => false,
+        'campaign_email_stats_enabled'                                                          => true,
         'peak_interaction_timer_cache_timeout'                                                  => Mautic\LeadBundle\Services\PeakInteractionTimer::DEFAULT_CACHE_TIMEOUT,
         'peak_interaction_timer_best_default_hour_start'                                        => Mautic\LeadBundle\Services\PeakInteractionTimer::DEFAULT_BEST_HOUR_START,
         'peak_interaction_timer_best_default_hour_end'                                          => Mautic\LeadBundle\Services\PeakInteractionTimer::DEFAULT_BEST_HOUR_END,
@@ -376,6 +377,5 @@ return [
         'peak_interaction_timer_fetch_interactions_from'                                        => Mautic\LeadBundle\Services\PeakInteractionTimer::DEFAULT_FETCH_INTERACTIONS_FROM,
         'peak_interaction_timer_fetch_limit'                                                    => Mautic\LeadBundle\Services\PeakInteractionTimer::DEFAULT_FETCH_LIMIT,
         'peak_interaction_timer_max_optimal_days'                                               => Mautic\LeadBundle\Services\PeakInteractionTimer::DEFAULT_MAX_OPTIMAL_DAYS,
-        'campaign_email_stats_enabled'                                                          => true,
     ],
 ];
