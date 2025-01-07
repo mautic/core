@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mautic\EmailBundle\Stats;
 
 use Doctrine\DBAL\ArrayParameterType;
@@ -43,7 +45,7 @@ class EmailPeriodMetrics
             ->setParameter('source_ids', $eventsIds, ArrayParameterType::INTEGER)
             ->setParameter('timezoneOffset', $timezoneOffset)
             ->setParameter('dateFrom', $dateFrom->format(DateTimeHelper::FORMAT_DB))
-            ->setParameter('dateTo', $dateTo->setTime(23, 59, 59)->format('Y-m-d H:i:s'))
+            ->setParameter('dateTo', $dateTo->setTime(23, 59, 59)->format(DateTimeHelper::FORMAT_DB))
             ->setParameter('email_source', self::EMAIL_SOURCE)
             ->setParameter('campaign_event_source', self::CAMPAIGN_EVENT_SOURCE)
             ->orderBy('d.day');
@@ -55,8 +57,6 @@ class EmailPeriodMetrics
      * @param array<int, int> $eventsIds
      *
      * @return array<int, array<string, int|string>>
-     *
-     * @throws \Exception
      */
     public function emailMetricsPerHourByCampaignEvents(array $eventsIds, \DateTimeImmutable $dateFrom, \DateTimeImmutable $dateTo, string $timezoneOffset): array
     {

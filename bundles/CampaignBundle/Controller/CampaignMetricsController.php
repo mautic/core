@@ -83,9 +83,9 @@ class CampaignMetricsController extends AbstractController
 
         $timeFormat = $this->coreParametersHelper->get('date_format_timeonly');
 
-        foreach ($hoursRange as $r) {
-            $startTime = (new \DateTime())->setTime($r, 0);
-            $endTime   = (new \DateTime())->setTime(($r + 1) % 24, 0);
+        foreach ($hoursRange as $hour) {
+            $startTime = (new \DateTime())->setTime($hour, 0);
+            $endTime   = (new \DateTime())->setTime(($hour + 1) % 24, 0);
 
             $labels[] = $startTime->format($timeFormat).' - '.$endTime->format($timeFormat);
         }
