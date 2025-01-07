@@ -376,5 +376,6 @@ return [
         'peak_interaction_timer_fetch_interactions_from'                                        => Mautic\LeadBundle\Services\PeakInteractionTimer::DEFAULT_FETCH_INTERACTIONS_FROM,
         'peak_interaction_timer_fetch_limit'                                                    => Mautic\LeadBundle\Services\PeakInteractionTimer::DEFAULT_FETCH_LIMIT,
         'peak_interaction_timer_max_optimal_days'                                               => Mautic\LeadBundle\Services\PeakInteractionTimer::DEFAULT_MAX_OPTIMAL_DAYS,
+        'campaign_email_stats_enabled'                                                          => true,
     ],
 ];

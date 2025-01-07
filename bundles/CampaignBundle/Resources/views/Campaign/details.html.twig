@@ -101,7 +101,7 @@
                             {{ 'mautic.campaign.stats'|trans }}
                         </a>
                     </li>
-                    {%  if isEmailCampaign|default(false) %}
+                    {%  if showEmailStats|default(false) %}
                         <li>
                             <a href="#campaign-email-stats" role="tab" data-toggle="tab" data-load="campaign-email-stats">
                                 {{ 'mautic.campaign.email_stats'|trans }}
@@ -139,7 +139,7 @@
                         <i class="ri-loader-3-line ri-spin"></i>
                     </div>
                 </div>
-                {% if isEmailCampaign|default(false) %}
+                {% if showEmailStats|default(false) %}
                 <div class="tab-pane bdr-w-0" id="campaign-email-stats">
                     <div class="row">
                         <div class="col-md-6">
