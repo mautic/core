@@ -1922,22 +1922,18 @@ body > #app-wrapper {
   transition: var(--transition-all-expressive);
 }
 .app-sidebar .nav-sidebar > .nav > li > a .arrow {
-  -webkit-transition: opacity .3s ease .1s, margin-left 0s ease .2s;
-  -o-transition: opacity .3s ease .1s, margin-left 0s ease .2s;
-  transition: opacity .3s ease .1s, margin-left 0s ease .2s;
+  -webkit-transition: var(--transition-all-expressive);
+  -o-transition: var(--transition-all-expressive);
+  transition: var(--transition-all-expressive);
   opacity: 1;
   margin-left: 0;
-  font-family: 'FontAwesome';
   position: relative;
   top: 1px;
   display: block;
 }
-.app-sidebar .nav-sidebar > .nav > li > a .arrow:after {
-  content: "\f0da";
-}
-.app-sidebar .nav-sidebar > .nav > li.open > a .arrow:after,
-.app-sidebar .nav-sidebar > .nav > li.active > a .arrow:after {
-  content: "\f0d7";
+.app-sidebar .nav-sidebar > .nav > li.open > a .arrow,
+.app-sidebar .nav-sidebar > .nav > li.active > a .arrow {
+  transform: scaleY(-1);
 }
 .app-sidebar .nav-sidebar > .nav > li.open > a .icon,
 .app-sidebar .nav-sidebar > .nav > li.active > a .icon {
