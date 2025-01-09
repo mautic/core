@@ -1234,7 +1234,7 @@ class MailHelper
         // Process emails created by Mautic v1
         if (empty($customHtml) && $template) {
             if (empty($slots)) {
-                $slots    = $this->factory->getTheme($template)->getSlots('email');
+                $slots    = $this->themeHelper->getTheme($template)->getSlots('email');
             }
 
             if (isset($slots[$template])) {
