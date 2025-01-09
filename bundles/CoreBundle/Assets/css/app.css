@@ -1653,8 +1653,8 @@ body > #app-wrapper {
   margin-top: 7.5px;
   margin-bottom: 7.5px;
 }
-#app-header.navbar .navbar-nocollapse .navbar-form .form-group .fa,
-#app-header.navbar .navbar-nocollapse .navbar-form .input-group .fa {
+#app-header.navbar .navbar-nocollapse .navbar-form .form-group i,
+#app-header.navbar .navbar-nocollapse .navbar-form .input-group i {
   color: var(--text-primary);
 }
 #app-header.navbar .navbar-nocollapse .navbar-form .form-control {
