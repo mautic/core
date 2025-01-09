@@ -2482,18 +2482,18 @@ blockquote > p:before {
   position: absolute;
   top: -1px;
   margin-left: -25px;
-  font-family: "FontAwesome";
+  font-family: "remixicon";
   font-size: 18px;
-  content: "\f10d";
+  content: "\EC51";
   color: #ebedf0;
 }
 blockquote > p:after {
   position: absolute;
   bottom: -1px;
   margin-left: 5px;
-  font-family: "FontAwesome";
+  font-family: "remixicon";
   font-size: 18px;
-  content: "\f10e";
+  content: "\EC52";
   color: #ebedf0;
 }
 .blockquote-reverse {
